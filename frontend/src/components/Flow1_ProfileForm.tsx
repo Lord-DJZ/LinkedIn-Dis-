@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import type { ResumeExtractionResult } from '../types';
 import {
-  UploadCloud,
   CheckCircle2,
   AlertCircle,
   Plus,
@@ -27,7 +26,6 @@ import {
   Edit2,
   Lightbulb,
   ArrowLeft,
-  ArrowRight,
   Phone,
   Mail,
   MapPin,
@@ -62,6 +60,8 @@ type WizardStep = 'choice' | 'contacts' | 'experience' | 'education' | 'skills' 
 export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   // Current view step: starts at 'choice' (Image 1 match)
   const [currentStep, setCurrentStep] = useState<WizardStep>('choice');
+  const [selectedChoice, setSelectedChoice] = useState<'upload' | 'create'>('upload');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Step tips accordion state
   const [showTips, setShowTips] = useState(false);
@@ -519,126 +519,189 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SCREEN 0: CHOICE SCREEN (IMAGE 1 MATCH - "BetterCV" Style)
+  // SCREEN 0: RESUME INPUT SELECTION (REFERENCE IMAGE 1 MATCH)
   // ═══════════════════════════════════════════════════════════════════════════
   if (currentStep === 'choice') {
+    const handleContinueChoice = () => {
+      if (selectedChoice === 'upload') {
+        fileInputRef.current?.click();
+      } else {
+        setCurrentStep('contacts');
+      }
+    };
+
     return (
-      <div className="min-h-[calc(100vh-65px)] bg-[#FAF7F2] flex flex-col justify-center font-sans text-[#141413] antialiased py-12">
-        {/* Centered Main Container */}
-        <div className="max-w-4xl mx-auto px-4 w-full text-center flex flex-col items-center justify-center">
+      <div className="min-h-[calc(100vh-80px)] bg-[#FAF9F6] flex items-center justify-center p-4 sm:p-8 font-sans antialiased text-[#111827]">
+        {/* Hidden File Input for Resume Upload */}
+        <input
+          id="choice-resume-file-input"
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,image/*"
+          onChange={handleFileInput}
+          className="hidden"
+        />
+
+        {/* Centered White Card with Soft Shadow and Rounded Corners */}
+        <div className="w-full max-w-[680px] sm:max-w-[720px] md:max-w-[760px] bg-white rounded-[32px] sm:rounded-[36px] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.02)] border border-black/[0.03] py-12 sm:py-16 px-6 sm:px-12 flex flex-col items-center text-center transition-all">
           
-          {/* Main Question Heading (Image 1 match) */}
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1E293B] mb-10 font-serif">
-            How will you make your resume?
+          {/* Header Title */}
+          <h1 className="text-[26px] sm:text-[30px] md:text-[32px] font-bold text-[#111827] tracking-tight font-sans">
+            Input your resume
           </h1>
 
-          {/* Processing / Feedback status */}
+          {/* Subtitle */}
+          <p className="text-[13.5px] sm:text-[14.5px] text-[#94A3B8] font-normal mt-2 sm:mt-2.5 mb-8 sm:mb-10">
+            Choose how you want to get started.
+          </p>
+
+          {/* Status / Processing Feedback */}
           {isProcessing && (
-            <div className="mb-8 p-4 rounded-2xl bg-white border border-[#E8E2D9] shadow-md flex items-center gap-3 text-xs font-semibold text-[#141413] max-w-md mx-auto animate-pulse">
-              <Loader2 className="w-4 h-4 animate-spin text-[#0091FF]" />
-              <span>{pipelineMessage || 'Processing CV file...'}</span>
+            <div className="mb-6 p-3 px-4 rounded-xl bg-blue-50/80 border border-blue-100 flex items-center gap-2.5 text-xs font-semibold text-[#1D4ED8] animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin text-[#2563EB]" />
+              <span>{pipelineMessage || 'Processing resume file...'}</span>
             </div>
           )}
 
           {errorMessage && (
-            <div className="mb-8 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium max-w-md mx-auto flex items-center gap-2">
+            <div className="mb-6 p-3 px-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Two Prominent Selection Cards (Image 1 match) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
+          {/* Selection Option Cards (Exactly Two Compact Boxes) */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 w-full mb-8 sm:mb-10">
             
-            {/* Card 1: I already have a resume */}
-            <label
-              htmlFor="choice-resume-file-input"
+            {/* Option 1: Upload Resume */}
+            <div
+              id="option-upload-resume"
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedChoice('upload')}
+              onDoubleClick={() => {
+                setSelectedChoice('upload');
+                fileInputRef.current?.click();
+              }}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
-              onDrop={handleDrop}
-              className={`bg-white rounded-[24px] border transition-all duration-200 p-8 sm:p-9 flex flex-col items-center justify-between text-center cursor-pointer shadow-xs hover:shadow-md group relative ${
+              onDrop={(e) => {
+                setSelectedChoice('upload');
+                handleDrop(e);
+              }}
+              className={`w-[140px] h-[136px] sm:w-[156px] sm:h-[152px] rounded-[18px] sm:rounded-[22px] flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-all select-none ${
                 dragActive
-                  ? 'border-[#0091FF] bg-sky-50/40 ring-4 ring-sky-100'
-                  : 'border-[#E8E2D9] hover:border-[#0091FF]/80'
+                  ? 'border-2 border-[#3B82F6] bg-blue-100/60 ring-4 ring-blue-100 shadow-sm'
+                  : selectedChoice === 'upload'
+                  ? 'border-[1.5px] sm:border-2 border-[#3B82F6] bg-[#EFF6FF] shadow-xs'
+                  : 'border border-[#E2E8F0] bg-white hover:border-[#CBD5E1] shadow-2xs'
               }`}
             >
-              <input
-                id="choice-resume-file-input"
-                type="file"
-                accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,image/*"
-                onChange={handleFileInput}
-                className="hidden"
-              />
-
-              {/* Graphic Icon: Yellow Folder + Cloud with Arrow + Stars */}
-              <div className="w-20 h-20 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center mb-6 group-hover:scale-105 transition-transform relative">
-                <div className="relative">
-                  <div className="w-10 h-7 bg-[#FBBF24] rounded-sm shadow-xs flex items-center justify-center">
-                    <div className="w-6 h-5 bg-white rounded-xs -mt-2 shadow-2xs"></div>
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-[#0091FF] text-white flex items-center justify-center shadow-xs">
-                    <UploadCloud className="w-4 h-4" />
-                  </div>
-                </div>
-                {/* Sparkle accents */}
-                <Sparkles className="w-3.5 h-3.5 text-amber-400 absolute top-2 right-2" />
-                <Sparkles className="w-2.5 h-2.5 text-sky-400 absolute bottom-2 left-2" />
+              {/* Monochrome Black/Slate Document Upload Icon */}
+              <div className="mb-2.5 sm:mb-3 text-[#1E293B]">
+                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 sm:w-8 sm:h-8">
+                  <path
+                    d="M6 3.5C6 2.67 6.67 2 7.5 2H17.5L23 7.5V24.5C23 25.33 22.33 26 21.5 26H7.5C6.67 26 6 25.33 6 24.5V3.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M17.5 2V8H23"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M14.5 20.5V13M14.5 13L10.5 17M14.5 13L18.5 17"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
 
-              <div>
-                <h2 className="text-lg font-bold text-[#1E293B] group-hover:text-[#0091FF] transition-colors mb-2">
-                  I already have a resume
-                </h2>
-                <p className="text-xs text-[#64748B] leading-relaxed max-w-[210px] mx-auto">
-                  Upload your existing resume to make quick edits
-                </p>
-              </div>
-
-              <div className="mt-6 text-[11px] font-semibold text-[#0091FF] group-hover:underline flex items-center gap-1">
-                <span>Upload PDF, Word, or Image</span>
-                <ArrowRight className="w-3 h-3" />
-              </div>
-            </label>
-
-            {/* Card 2: Start from scratch */}
-            <div
-              onClick={() => setCurrentStep('contacts')}
-              className="bg-white rounded-[24px] border border-[#E8E2D9] hover:border-[#0091FF]/80 hover:shadow-md transition-all duration-200 p-8 sm:p-9 flex flex-col items-center justify-between text-center cursor-pointer group shadow-xs"
-            >
-              {/* Graphic Icon: Pink Notepad with Lined Pages + Angled Pencil */}
-              <div className="w-20 h-20 rounded-2xl bg-[#FFF1F2] border border-[#FECDD3] flex items-center justify-center mb-6 group-hover:scale-105 transition-transform relative">
-                <div className="relative">
-                  <div className="w-9 h-11 bg-white border border-[#F43F5E]/30 rounded-xs p-1 shadow-xs space-y-1">
-                    <div className="w-full h-1 bg-[#FDA4AF] rounded-full"></div>
-                    <div className="w-full h-1 bg-[#FDA4AF] rounded-full"></div>
-                    <div className="w-3/4 h-1 bg-[#FDA4AF] rounded-full"></div>
-                  </div>
-                  {/* Angled pencil */}
-                  <div className="absolute -top-1 -right-2 w-7 h-7 rounded-full bg-[#0091FF] text-white flex items-center justify-center shadow-xs rotate-12">
-                    <Edit2 className="w-3.5 h-3.5 text-white" />
-                  </div>
-                </div>
-                {/* Sparkle accents */}
-                <Sparkles className="w-3.5 h-3.5 text-rose-400 absolute top-2 right-2" />
-                <Sparkles className="w-2.5 h-2.5 text-amber-400 absolute bottom-2 left-2" />
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold text-[#1E293B] group-hover:text-[#0091FF] transition-colors mb-2">
-                  Start from scratch
-                </h2>
-                <p className="text-xs text-[#64748B] leading-relaxed max-w-[210px] mx-auto">
-                  Our AI will guide you through creating a resume
-                </p>
-              </div>
-
-              <div className="mt-6 text-[11px] font-semibold text-[#0091FF] group-hover:underline flex items-center gap-1">
-                <span>Start Step-by-Step Wizard</span>
-                <ArrowRight className="w-3 h-3" />
-              </div>
+              <span className="text-[13px] sm:text-[14px] font-semibold text-[#1E293B] leading-tight">
+                Upload Resume
+              </span>
+              <span className="text-[10px] sm:text-[10.5px] text-[#64748B] mt-1 leading-tight max-w-[125px]">
+                Upload your existing resume
+              </span>
             </div>
 
+            {/* Option 2: Create Resume */}
+            <div
+              id="option-create-resume"
+              role="button"
+              tabIndex={0}
+              onClick={() => setSelectedChoice('create')}
+              onDoubleClick={() => setCurrentStep('contacts')}
+              className={`w-[140px] h-[136px] sm:w-[156px] sm:h-[152px] rounded-[18px] sm:rounded-[22px] flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-all select-none ${
+                selectedChoice === 'create'
+                  ? 'border-[1.5px] sm:border-2 border-[#3B82F6] bg-[#EFF6FF] shadow-xs'
+                  : 'border border-[#E2E8F0] bg-white hover:border-[#CBD5E1] shadow-2xs'
+              }`}
+            >
+              {/* Monochrome Black/Slate Document Edit Icon */}
+              <div className="mb-2.5 sm:mb-3 text-[#1E293B]">
+                <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 sm:w-8 sm:h-8">
+                  <path
+                    d="M18 13.5V4C18 3.17 17.33 2.5 16.5 2.5H6.5C5.67 2.5 5 3.17 5 4V24C5 24.83 5.67 25.5 6.5 25.5H12"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M8.5 8.5H14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                  <path d="M8.5 12.5H12.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                  <path d="M8.5 16.5H11" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                  <path
+                    d="M14 22.5L13 24.5L15 23.5L22 16.5C22.4 16.1 22.4 15.5 22 15.1L20.4 13.5C20 13.1 19.4 13.1 19 13.5L14 18.5V22.5Z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+
+              <span className="text-[13px] sm:text-[14px] font-semibold text-[#1E293B] leading-tight">
+                Create Resume
+              </span>
+              <span className="text-[10px] sm:text-[10.5px] text-[#64748B] mt-1 leading-tight max-w-[125px]">
+                Build your resume step by step
+              </span>
+            </div>
+
+          </div>
+
+          {/* Continue Pill Button */}
+          <button
+            id="choice-btn-continue"
+            type="button"
+            onClick={handleContinueChoice}
+            disabled={isProcessing}
+            className="h-[46px] sm:h-[48px] px-10 sm:px-12 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-[14.5px] sm:text-[15px] shadow-[0_4px_14px_rgba(37,99,235,0.3)] hover:shadow-[0_6px_18px_rgba(37,99,235,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              <span>Continue</span>
+            )}
+          </button>
+
+          {/* Progress Indicator Dots (Three small circles, first one active) */}
+          <div className="flex items-center justify-center gap-2 mt-7 sm:mt-8" aria-label="Step 1 of 3">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#2563EB]" />
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#E2E8F0]" />
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#E2E8F0]" />
           </div>
 
         </div>
