@@ -9,6 +9,9 @@ class ExtractedPersonalInfo(BaseModel):
     phone: Optional[str] = None
     city: Optional[str] = None
     country: Optional[str] = None
+    avatar_url: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
 
 
 class ExtractedProfessionalInfo(BaseModel):

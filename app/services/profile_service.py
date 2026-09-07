@@ -51,6 +51,14 @@ class ProfileService:
             profile.availability_status = updates.availability_status
         if updates.profile_visibility is not None:
             profile.profile_visibility = updates.profile_visibility
+        if updates.avatar_url is not None:
+            profile.avatar_url = updates.avatar_url
+        if updates.phone is not None:
+            profile.phone = updates.phone
+        if updates.date_of_birth is not None:
+            profile.date_of_birth = updates.date_of_birth
+        if updates.gender is not None:
+            profile.gender = updates.gender
         if updates.is_searchable is not None:
             profile.is_searchable = updates.is_searchable
 

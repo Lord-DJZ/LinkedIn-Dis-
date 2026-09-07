@@ -63,6 +63,10 @@ export interface CandidateProfile {
   full_name: string;
   headline?: string;
   bio?: string;
+  avatar_url?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
   total_years_experience: number;
   availability_status: string;
   profile_visibility: 'public' | 'anonymous' | 'private';
@@ -149,6 +153,11 @@ export interface CandidateSearchResult {
   display_name: string;
   headline?: string;
   summary?: string;
+  avatar_url?: string;
+  email?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
   total_years_experience: number;
   city?: string;
   country?: string;
@@ -165,6 +174,11 @@ export interface RecruiterCandidateDetail {
   display_name: string;
   headline?: string;
   bio?: string;
+  avatar_url?: string;
+  email?: string;
+  phone?: string;
+  date_of_birth?: string;
+  gender?: string;
   total_years_experience: number;
   city?: string;
   country?: string;

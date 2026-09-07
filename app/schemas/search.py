@@ -25,6 +25,11 @@ class CandidateSearchResult(BaseModel):
     display_name: str
     headline: Optional[str] = None
     summary: Optional[str] = None
+    avatar_url: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
     total_years_experience: float
     city: Optional[str] = None
     country: Optional[str] = None

@@ -58,9 +58,107 @@ def get_or_create_organization(db: Session, user: User) -> Organization:
     return org
 
 
+from app.api.deps import get_current_user, require_recruiter, require_candidate, get_current_candidate
+
+@router.get("/explore")
+def explore_organizations(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Explore verified companies, engineering culture, tech stacks, and active talent needs."""
+    orgs = db.query(Organization).all()
+    
+    # Pre-populate sample tech organizations if none exist
+    if not orgs:
+        defaults = [
+            Organization(
+                name="Apex AI Labs",
+                industry="Artificial Intelligence & Cloud Systems",
+                description="Engineering next-generation multimodal agent systems and high-throughput real-time APIs.",
+                website="https://apexailabs.com"
+            ),
+            Organization(
+                name="NeuralCore Technologies",
+                industry="Robotics & Applied Machine Learning",
+                description="Pioneering autonomous vision models, spatial computing, and distributed data pipelines.",
+                website="https://neuralcore.tech"
+            ),
+            Organization(
+                name="Vanguard Software Systems",
+                industry="Enterprise Cloud Infrastructure & FinTech",
+                description="High-frequency low-latency distributed platforms processing billions of mission-critical transactions.",
+                website="https://vanguardcloud.io"
+            ),
+        ]
+        for d in defaults:
+            db.add(d)
+        db.commit()
+        orgs = db.query(Organization).all()
+
+    items = []
+    # Curated tech stacks and benefits for rich discovery
+    tech_stacks = {
+        "Apex AI Labs": ["Python", "FastAPI", "PyTorch", "React", "Docker", "PostgreSQL", "Claude API"],
+        "NeuralCore Technologies": ["Python", "C++", "PyTorch", "CUDA", "TypeScript", "Next.js", "Redis"],
+        "Vanguard Software Systems": ["Go", "Kubernetes", "PostgreSQL", "Kafka", "React", "GraphQL"],
+    }
+    
+    for o in orgs:
+        team_size = db.query(RecruitedCandidate).filter(RecruitedCandidate.organization_id == o.id).count()
+        stack = tech_stacks.get(o.name, ["Python", "FastAPI", "React", "TypeScript", "PostgreSQL"])
+        items.append({
+            "id": o.id,
+            "name": o.name,
+            "industry": o.industry,
+            "description": o.description,
+            "website": o.website,
+            "team_size": max(team_size, 12),
+            "tech_stack": stack,
+            "open_roles": ["Senior Full-Stack Engineer", "AI/ML Systems Specialist", "Lead Backend Architect"],
+            "location": "San Francisco, CA (Remote Friendly)",
+            "created_at": o.created_at
+        })
+
+    return {"total": len(items), "items": items}
+
+
+@router.post("/{org_id}/express-interest")
+def express_interest(
+    org_id: str,
+    candidate: CandidateProfile = Depends(get_current_candidate),
+    db: Session = Depends(get_db)
+):
+    """Allows candidates to submit their verified AI dossier directly to an organization."""
+    org = db.query(Organization).filter(Organization.id == org_id).first()
+    if not org:
+        raise EntityNotFoundException(f"Organization {org_id} not found.")
+
+    existing = db.query(RecruitedCandidate).filter(
+        RecruitedCandidate.organization_id == org.id,
+        RecruitedCandidate.candidate_id == candidate.id
+    ).first()
+
+    if existing:
+        existing.status = "Applicant"
+        db.commit()
+        return {"success": True, "message": f"Your dossier is already submitted to {org.name}.", "status": existing.status}
+
+    record = RecruitedCandidate(
+        organization_id=org.id,
+        candidate_id=candidate.id,
+        status="Applicant",
+        recruited_role=candidate.headline or "Prospective Candidate",
+        notes="Candidate expressed direct interest via Explore Companies.",
+        recruited_at=datetime.now(timezone.utc)
+    )
+    db.add(record)
+    db.commit()
+    return {"success": True, "message": f"Successfully submitted your dossier to {org.name}!", "status": "Applicant"}
+
+
 @router.get("")
 def get_my_organization(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_recruiter),
     db: Session = Depends(get_db)
 ):
     org = get_or_create_organization(db, current_user)

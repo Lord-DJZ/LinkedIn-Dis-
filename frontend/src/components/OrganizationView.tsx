@@ -94,7 +94,7 @@ export const OrganizationView: React.FC<OrganizationViewProps> = ({ onGoToSearch
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-[#f5f7f4] px-4 py-9 font-sans text-[#171917] antialiased sm:px-6 lg:px-8 lg:py-12">
+    <div className="min-h-[calc(100vh-65px)] bg-[rgb(176,55,5)] px-4 py-9 font-sans text-[#171917] antialiased sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto w-full max-w-6xl">
         
         {/* ── ORGANIZATION HEADER ── */}

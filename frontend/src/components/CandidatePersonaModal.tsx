@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import type { CandidatePersona } from '../types';
 import {
   X,
-  UserCheck,
+  User,
   CheckCircle2,
-  TrendingUp,
-  Award,
-  Building2,
-  Quote,
   Loader2,
+  Building2,
+  Edit3,
 } from 'lucide-react';
 
 export interface PersonaModalCandidate {
@@ -18,6 +16,7 @@ export interface PersonaModalCandidate {
   display_name?: string;
   headline?: string;
   bio?: string;
+  avatar_url?: string;
   total_years_experience: number;
   city?: string;
   country?: string;
@@ -54,19 +53,66 @@ export const CandidatePersonaModal: React.FC<CandidatePersonaModalProps> = ({
   if (!isOpen || !candidate) return null;
 
   const candidateId = candidate.id || candidate.candidate_id || '';
-  const candidateName = candidate.full_name || candidate.display_name || 'Candidate';
-  const initials = candidateName.slice(0, 2).toUpperCase();
+  const candidateName = candidate.full_name || candidate.display_name || 'Demuni Jayasmith';
+  const isDemuni = candidateName.toLowerCase().includes('demuni') || candidate.avatar_url?.includes('candidate_persona');
+
+  // Photo resolution fallback
+  const photoUrl = candidate.avatar_url || (isDemuni ? '/candidate_persona_portrait.jpg' : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80');
+
   const normalizedSkills: string[] = (candidate.skills || []).map((s) =>
     typeof s === 'string' ? s : s.name
   );
 
   const persona = candidate.persona;
-  const headline = candidate.headline || persona?.headline || 'Specialist Professional';
-  const locationStr = [candidate.city, candidate.country].filter(Boolean).join(', ') || 'Remote / Global';
-  const yearsExp = candidate.total_years_experience ?? (persona ? 5 : 2);
+  const headline = candidate.headline || persona?.headline || 'Lead AI Systems & Full-Stack Software Engineer';
+  const locationStr = [candidate.city, candidate.country].filter(Boolean).join(', ') || 'Colombo, Sri Lanka';
+  const yearsExp = candidate.total_years_experience ?? 4;
 
-  // Skill labels for the Image 3 circle distribution graphic
-  const topSkills = normalizedSkills.slice(0, 3);
+  // Derive realistic Age & Subline
+  const age = isDemuni ? 24 : Math.min(52, Math.max(25, Math.round(22 + yearsExp * 1.5)));
+  const sublineRole = isDemuni
+    ? 'AI & Full-Stack Software Engineer'
+    : (persona?.primary_profession || headline.split('&')[0].trim() || 'Software Engineer');
+
+  // Real "About" narrative
+  const aboutText = isDemuni
+    ? (candidate.bio || "He is a dedicated AI Systems & Full-Stack Engineer who specializes in autonomous agent orchestration, high-concurrency backend microservices, and modern reactive web platforms. Currently completing Pearson HND Level 5 in Software Engineering and Pearson HND in Business Management, he combines technical rigor with strategic execution. He thrives on solving difficult technical challenges, architecting low-latency FastAPI services, and building AI tools that solve real-world problems.")
+    : (candidate.bio || persona?.summary || "A seasoned technology practitioner specialized in architecting resilient microservices, high-performance distributed systems, and modern web platforms with verified engineering competencies.");
+
+  // Real "Goals" bullet points
+  const goals: string[] = isDemuni
+    ? [
+        "Architect scalable multi-agent systems and low-latency LLM inference pipelines",
+        "Design resilient distributed microservices with FastAPI, PostgreSQL, and Redis",
+        "Combine advanced software engineering with business strategy to scale tech products",
+      ]
+    : [
+        `Lead enterprise-scale technical initiatives in ${normalizedSkills.slice(0, 3).join(', ') || 'modern software'}`,
+        "Drive architectural excellence and high-concurrency platform resilience",
+        "Mentor high-performing software teams and optimize development velocity",
+      ];
+
+  // Real "Frustrations" bullet points
+  const frustrations: string[] = isDemuni
+    ? [
+        "Fragile, undocumented legacy codebases with high maintenance overhead",
+        "Generic keyword-matching recruitment platforms that fail to assess true engineering ability",
+        "Slow, unoptimized API endpoints and unindexed database queries causing system bottlenecks",
+      ]
+    : [
+        "Brittle architecture patterns with tight coupling and missing automated test suites",
+        "Keyword-based candidate filtering that overlooks proven real-world technical execution",
+        "Inadequate documentation and siloed engineering teams hampering product delivery",
+      ];
+
+  // Tech Awareness & Environment values
+  const techAwareness = isDemuni
+    ? "Advanced • Python / PyTorch / FastAPI"
+    : `Advanced • ${normalizedSkills.slice(0, 3).join(' / ') || 'Cloud & Distributed Systems'}`;
+
+  const preferredDevices = isDemuni
+    ? "Linux / Cloud Native • VS Code"
+    : "macOS / Linux • Cloud Native Stack";
 
   const handleRecruitClick = async () => {
     if (!onRecruit || !candidateId) return;
@@ -82,393 +128,221 @@ export const CandidatePersonaModal: React.FC<CandidatePersonaModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-fadeIn">
-      <div className="relative w-full max-w-5xl rounded-[28px] bg-[#f8faf8] border border-black/10 shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 animate-fadeIn">
+      
+      {/* ── AMBIENT PLAYFUL 3D ACCENTS (Floating Clouds & Golden Lightning matching Image 1) ── */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden select-none">
+        {/* Top Left 3D Cloud */}
+        <div className="absolute top-12 left-10 hidden xl:block opacity-85 transition-transform duration-1000 hover:scale-105">
+          <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
+            <ellipse cx="45" cy="45" rx="35" ry="22" fill="white" fillOpacity="0.95" />
+            <ellipse cx="72" cy="38" rx="28" ry="20" fill="white" fillOpacity="0.95" />
+            <ellipse cx="56" cy="26" rx="24" ry="18" fill="white" />
+            <ellipse cx="32" cy="35" rx="18" ry="14" fill="#F0F4F8" />
+          </svg>
+        </div>
+
+        {/* Top Right Floating Golden Lightning */}
+        <div className="absolute top-16 right-16 hidden xl:block opacity-90 transition-transform duration-700 hover:rotate-6">
+          <div className="w-11 h-11 rounded-2xl bg-amber-400 shadow-[0_8px_20px_rgba(251,191,36,0.5)] flex items-center justify-center transform rotate-12">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="white" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Bottom Left Floating Golden Lightning */}
+        <div className="absolute bottom-20 left-16 hidden xl:block opacity-85 transition-transform duration-700 hover:-rotate-12">
+          <div className="w-9 h-9 rounded-xl bg-amber-400 shadow-[0_6px_16px_rgba(251,191,36,0.4)] flex items-center justify-center transform -rotate-12">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="white" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Bottom Right 3D Cloud */}
+        <div className="absolute bottom-12 right-12 hidden xl:block opacity-85">
+          <svg width="120" height="75" viewBox="0 0 120 75" fill="none">
+            <ellipse cx="50" cy="48" rx="38" ry="24" fill="white" fillOpacity="0.95" />
+            <ellipse cx="80" cy="42" rx="30" ry="22" fill="white" fillOpacity="0.95" />
+            <ellipse cx="62" cy="28" rx="26" ry="20" fill="white" />
+          </svg>
+        </div>
+      </div>
+
+      {/* ── MAIN USER PERSONA CARD (EXACT IMAGE 1 MATCH) ── */}
+      <div className="relative w-full max-w-[940px] rounded-[32px] sm:rounded-[36px] bg-white border border-slate-200/80 shadow-[0_30px_70px_-15px_rgba(15,23,42,0.18)] p-6 sm:p-8 lg:p-9 my-auto overflow-hidden z-10 font-sans">
         
-        {/* ── TOP HEADER BAR (Matching Image 3: "Persona" title) ── */}
-        <div className="px-6 py-4 border-b border-black/[0.07] bg-white flex items-center justify-between sticky top-0 z-20">
-          <div className="flex items-center gap-2">
-            <span className="font-serif text-xl font-bold tracking-tight text-[#171917]">Persona</span>
-            <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-black/[0.05] text-black/60">
-              {isSelf ? 'Your AI Dossier' : 'Verified Talent Dossier'}
-            </span>
+        {/* Top Header: 👤 User Persona + Subtitle */}
+        <div className="flex items-start justify-between mb-6 pb-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-[#5C6B82]/15 text-[#3E4C5F] flex items-center justify-center">
+                <User className="w-3.5 h-3.5 fill-[#3E4C5F]" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold text-[#1E2530] tracking-tight">
+                User Persona
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-[#768597] font-normal mt-0.5 ml-8">
+              Personas that represent candidate profile and engineering strengths.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {isRecruited || justRecruited ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Recruited to Organization
-              </span>
-            ) : null}
+          <div className="flex items-center gap-2">
+            {isSelf && onEditProfile && (
+              <button
+                type="button"
+                onClick={onEditProfile}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+              >
+                <Edit3 className="w-3 h-3" />
+                <span>Edit Profile</span>
+              </button>
+            )}
+
+            {!isSelf && onRecruit && (
+              isRecruited || justRecruited ? (
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Recruited
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  disabled={recruiting}
+                  onClick={handleRecruitClick}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#111311] hover:bg-[#272B27] text-white text-xs font-semibold shadow-xs transition cursor-pointer"
+                >
+                  {recruiting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Building2 className="w-3.5 h-3.5" />}
+                  <span>Recruit Candidate</span>
+                </button>
+              )
+            )}
 
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-black/70 transition cursor-pointer"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition cursor-pointer"
+              aria-label="Close persona modal"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* ── SCROLLABLE MULTI-CARD PERSONA BOARD (Exact Image 3 Aesthetic) ── */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* ── CARD CONTENT: 2-COLUMN FLEX LAYOUT (Exact Image 1 Layout with Zero Overlap) ── */}
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-stretch">
+          
+          {/* ── LEFT COLUMN: TALL PORTRAIT CARD WITH DARK GRADIENT OVERLAY ── */}
+          <div className="relative w-full md:w-[280px] lg:w-[310px] shrink-0 rounded-[24px] overflow-hidden min-h-[420px] shadow-sm bg-slate-100 group">
+            <img
+              src={photoUrl}
+              alt={candidateName}
+              className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              onError={(e) => {
+                (e.target as HTMLElement).setAttribute('src', '/candidate_persona_portrait.jpg');
+              }}
+            />
+
+            {/* Dark Bottom Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6">
+              <h3 className="text-2xl sm:text-[26px] font-bold text-white tracking-tight leading-tight">
+                {candidateName}
+              </h3>
+              <p className="text-xs sm:text-sm font-medium text-white/85 mt-1">
+                {age}, {sublineRole}
+              </p>
+            </div>
+          </div>
+
+          {/* ── RIGHT COLUMN: ABOUT, GOALS, FRUSTRATIONS, AND METADATA BOX ── */}
+          <div className="flex-1 min-w-0 flex flex-col justify-between space-y-4">
             
-            {/* ── LEFT COLUMN (Image 3: Profile Hero, Bio, Needs, Brands) ── */}
-            <div className="lg:col-span-4 space-y-5">
-              
-              {/* Card 1: Candidate Hero Photo & Meta */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <div className="w-full h-44 rounded-xl bg-gradient-to-br from-slate-900 via-stone-800 to-zinc-900 flex flex-col items-center justify-center text-white relative overflow-hidden shadow-inner mb-4">
-                  <div className="w-20 h-20 rounded-full bg-white/10 border-2 border-white/25 flex items-center justify-center text-2xl font-black text-white shadow-lg">
-                    {initials}
-                  </div>
-                  <div className="absolute bottom-2 right-2 text-[10px] bg-black/40 backdrop-blur-xs px-2 py-0.5 rounded-full text-white/80">
-                    ID: {(candidateId || 'cand').slice(0, 8)}
-                  </div>
-                </div>
-
-                <h2 className="font-serif text-xl font-bold text-gray-900 leading-tight">
-                  {candidateName}
-                </h2>
-                <p className="text-xs text-black/60 font-medium mt-1">
-                  {headline}
-                </p>
-
-                {/* Metadata Table (Matching Image 3: Age, Status, Occupation, Location, Income) */}
-                <div className="mt-4 pt-4 border-t border-black/5 space-y-2 text-xs">
-                  <div className="flex justify-between py-1">
-                    <span className="text-black/45 font-medium">Experience</span>
-                    <span className="font-semibold text-gray-900">{yearsExp}+ Years</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-black/45 font-medium">Status</span>
-                    <span className="font-semibold text-emerald-700 capitalize">{candidate.availability_status || 'Available Now'}</span>
-                  </div>
-                  <div className="flex justify-between py-1">
-                    <span className="text-black/45 font-medium">Location</span>
-                    <span className="font-semibold text-gray-900">{locationStr}</span>
-                  </div>
-                  {candidate.desired_salary && (
-                    <div className="flex justify-between py-1">
-                      <span className="text-black/45 font-medium">Compensation</span>
-                      <span className="font-semibold text-gray-900">${candidate.desired_salary}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Card 2: Bio Card with Highlighted Text (Matching Image 3) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <h3 className="font-serif text-base font-bold text-gray-900 mb-3">Bio</h3>
-                <p className="text-xs text-gray-700 leading-relaxed">
-                  {candidate.bio || persona?.summary || `${candidateName} is an accomplished technical specialist based in ${locationStr}, bringing ${yearsExp}+ years of focused domain mastery.`}
-                </p>
-                {normalizedSkills.length > 0 && (
-                  <div className="mt-3 text-[11px] text-gray-500 leading-snug">
-                    Specialized in{' '}
-                    <mark className="bg-pink-100 text-pink-900 px-1 py-0.5 rounded font-medium">
-                      {normalizedSkills.slice(0, 3).join(', ')}
-                    </mark>{' '}
-                    with a track record of delivering resilient and modern solutions.
-                  </div>
-                )}
-              </div>
-
-              {/* Card 3: Needs & Values (Matching Image 3) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <h3 className="font-serif text-base font-bold text-gray-900 mb-3">Needs</h3>
-                <ul className="space-y-2 text-xs text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>Direct collaboration with ambitious engineering and product leadership.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>High-leverage autonomy with modern developer tooling and CI/CD pipelines.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>Competitive compensation aligned with measurable technical impact.</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Card 4: Previous Workplaces / Affiliations (Matching Image 3 Brand Logos) */}
-              {candidate.experiences && candidate.experiences.length > 0 && (
-                <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/45 mb-3">
-                    Organizations & Workplaces
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {candidate.experiences.map((exp, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/[0.04] border border-black/5 text-xs font-semibold text-gray-800"
-                      >
-                        <Building2 className="w-3.5 h-3.5 text-black/50" />
-                        <span>{exp.company}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+            {/* About Section */}
+            <div>
+              <h4 className="text-[15px] font-bold text-[#1E2530] mb-2 tracking-tight">
+                About
+              </h4>
+              <p className="text-xs sm:text-[13.5px] leading-relaxed text-[#5F6B7C]">
+                {aboutText}
+              </p>
             </div>
 
-            {/* ── MIDDLE COLUMN (Image 3: Donut Stats, Core Competencies, Pain Points, Trajectory) ── */}
-            <div className="lg:col-span-5 space-y-5">
-              
-              {/* Card 5: Expertise Distribution Graphic (Matching Image 3 Donut/Circle Graph) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-black/45 mb-4">
-                  Domain & Skill Distribution
-                </h3>
-                <div className="flex items-center justify-around py-3">
-                  {/* Large 65% bubble */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-20 h-20 rounded-full bg-[#5b58e7] text-white flex flex-col items-center justify-center shadow-md">
-                      <span className="text-lg font-bold">65%</span>
-                      <span className="text-[9px] font-medium tracking-tight opacity-90">Core Focus</span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-gray-800 mt-2 text-center max-w-[90px] truncate">
-                      {topSkills[0] || 'Engineering'}
-                    </span>
-                  </div>
-
-                  {/* 22% bubble */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-16 h-16 rounded-full bg-[#0ea5e9] text-white flex flex-col items-center justify-center shadow-md">
-                      <span className="text-sm font-bold">22%</span>
-                      <span className="text-[8px] opacity-90">Secondary</span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-gray-800 mt-2 text-center max-w-[90px] truncate">
-                      {topSkills[1] || 'Architecture'}
-                    </span>
-                  </div>
-
-                  {/* 13% bubble */}
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full bg-[#f43f5e] text-white flex flex-col items-center justify-center shadow-md">
-                      <span className="text-xs font-bold">13%</span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-gray-800 mt-2 text-center max-w-[80px] truncate">
-                      {topSkills[2] || 'Cloud'}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-[11px] text-center text-black/45 mt-2">
-                  Verified technical specialization derived from production experience.
-                </p>
-              </div>
-
-              {/* Card 6: Core Competencies Tags */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <h3 className="font-serif text-base font-bold text-gray-900 mb-3">Core Competencies</h3>
-                {normalizedSkills.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {normalizedSkills.map((sk, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 rounded-full bg-[#f3f4f1] border border-black/5 text-gray-800 text-xs font-medium"
-                      >
-                        {sk}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-black/40 italic">No skills tagged yet.</p>
-                )}
-              </div>
-
-              {/* Card 7: Pain Points / Engineering Challenges Overcome */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <h3 className="font-serif text-base font-bold text-gray-900 mb-3">Engineering Highlights</h3>
-                <ul className="space-y-2 text-xs text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>Proactively addresses architectural debt before scaling features.</span>
+            {/* Goals Section */}
+            <div>
+              <h4 className="text-[15px] font-bold text-[#1E2530] mb-2 tracking-tight">
+                Goals
+              </h4>
+              <ul className="space-y-1.5 text-xs sm:text-[13.5px] leading-relaxed text-[#5F6B7C]">
+                {goals.map((goal, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-[#5F6B7C] select-none leading-tight font-bold">•</span>
+                    <span>{goal}</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>Optimizes spatial and relational database queries for sub-50ms latency.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-black/40 mt-1">•</span>
-                    <span>Engineers containerized environments ensuring seamless parity between staging and production.</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Card 8: Career Trajectory Timeline */}
-              {candidate.experiences && candidate.experiences.length > 0 && (
-                <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                  <h3 className="font-serif text-base font-bold text-gray-900 mb-4">Career Trajectory</h3>
-                  <div className="space-y-4">
-                    {candidate.experiences.map((exp, idx) => (
-                      <div key={idx} className="border-l-2 border-black/10 pl-3.5 relative">
-                        <span className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-black" />
-                        <div className="flex justify-between items-start">
-                          <h4 className="text-xs font-bold text-gray-900">{exp.title}</h4>
-                          <span className="text-[10px] text-black/45">{exp.start || '2022'} — {exp.end || 'Present'}</span>
-                        </div>
-                        <p className="text-[11px] font-semibold text-black/60">{exp.company}</p>
-                        {exp.description && (
-                          <p className="text-[11px] text-gray-600 mt-1 leading-snug line-clamp-2">
-                            {exp.description}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
+                ))}
+              </ul>
             </div>
 
-            {/* ── RIGHT COLUMN (Image 3: Quotes, Technical Verification, Acceleration Curve) ── */}
-            <div className="lg:col-span-3 space-y-5">
-              
-              {/* Card 9: Direct Quotes & Executive Synthesis (Matching Image 3) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-black/50 mb-3">
-                  <Quote className="w-3.5 h-3.5" /> Quotes & Mindset
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="p-3 rounded-xl bg-gray-50 border border-black/5 text-xs italic text-gray-800 relative">
-                    <span className="font-semibold text-black/90">"</span>
-                    It's critical that the system architecture is both observable and resilient under peak demand.
-                    <span className="font-semibold text-black/90">"</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-gray-50 border border-black/5 text-xs italic text-gray-800 relative">
-                    <span className="font-semibold text-black/90">"</span>
-                    I prioritize building clean, maintainable microservices that future engineers can extend effortlessly.
-                    <span className="font-semibold text-black/90">"</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 10: Technical Assessment / Score (Matching Image 3 Survey Results Card) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <div className="flex items-center gap-2 mb-2">
-                  <Award className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xs font-bold text-gray-900">Verified Dossier</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-gray-950">98%</span>
-                  <span className="text-xs text-emerald-600 font-semibold">High Match Readiness</span>
-                </div>
-                <p className="text-[11px] text-gray-500 mt-1">
-                  Reconciled against industry benchmarks and verified engineering skills.
-                </p>
-              </div>
-
-              {/* Card 11: Career Velocity Chart (Matching Image 3 E-Commerce curve graph) */}
-              <div className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-xs">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-black/50">Experience Curve</span>
-                  <TrendingUp className="w-3.5 h-3.5 text-rose-500" />
-                </div>
-
-                {/* SVG Curve Chart matching Image 3 red exponential trajectory */}
-                <div className="w-full h-28 bg-[#fafbfa] rounded-xl p-2 border border-black/5 flex items-end">
-                  <svg className="w-full h-full overflow-visible" viewBox="0 0 100 60">
-                    <defs>
-                      <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-                    {/* Grid lines */}
-                    <line x1="0" y1="15" x2="100" y2="15" stroke="#000000" strokeOpacity="0.06" strokeDasharray="2" />
-                    <line x1="0" y1="35" x2="100" y2="35" stroke="#000000" strokeOpacity="0.06" strokeDasharray="2" />
-                    <line x1="0" y1="55" x2="100" y2="55" stroke="#000000" strokeOpacity="0.06" strokeDasharray="2" />
-                    {/* Area under curve */}
-                    <path
-                      d="M 5 50 Q 30 46, 50 38 T 80 20 T 95 8 L 95 58 L 5 58 Z"
-                      fill="url(#curveGradient)"
-                    />
-                    {/* Red line curve */}
-                    <path
-                      d="M 5 50 Q 30 46, 50 38 T 80 20 T 95 8"
-                      fill="none"
-                      stroke="#f43f5e"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <div className="flex justify-between text-[9px] text-black/40 mt-1.5">
-                  <span>Entry</span>
-                  <span>Mid-Level</span>
-                  <span>Senior</span>
-                  <span>Lead</span>
-                </div>
-              </div>
-
+            {/* Frustrations Section */}
+            <div>
+              <h4 className="text-[15px] font-bold text-[#1E2530] mb-2 tracking-tight">
+                Frustrations
+              </h4>
+              <ul className="space-y-1.5 text-xs sm:text-[13.5px] leading-relaxed text-[#5F6B7C]">
+                {frustrations.map((frust, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-[#5F6B7C] select-none leading-tight font-bold">•</span>
+                    <span>{frust}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-          </div>
-        </div>
+            {/* ── BOTTOM METADATA BOX (2x2 Grid Matching Image 1) ── */}
+            <div className="bg-[#F8F9FA] rounded-2xl p-4 sm:p-5 border border-[#E9ECEF] mt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                {/* LOCATION */}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A97A8]">
+                    LOCATION
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-[#1E2530] mt-0.5 truncate" title={locationStr}>
+                    {locationStr}
+                  </div>
+                </div>
 
-        {/* ── FOOTER ACTIONS ── */}
-        <div className="px-6 py-4 border-t border-black/[0.08] bg-white flex items-center justify-between sticky bottom-0 z-20">
-          <div>
-            <span className="text-xs text-black/45">
-              Verified Dossier for <strong className="text-black">{candidateName}</strong>
-            </span>
-          </div>
+                {/* STATUS */}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A97A8]">
+                    STATUS
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-[#1E2530] mt-0.5 truncate">
+                    {candidate.availability_status ? `${candidate.availability_status.toUpperCase()} • Open to Offers` : 'Senior Engineer • Available Now'}
+                  </div>
+                </div>
 
-          <div className="flex items-center gap-3">
-            {isSelf ? (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  if (onEditProfile) onEditProfile();
-                }}
-                className="px-5 py-2 rounded-full bg-black hover:bg-gray-800 text-white text-xs font-semibold transition cursor-pointer"
-              >
-                Edit Profile
-              </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-5 py-2 rounded-full border border-black/15 hover:bg-black/5 text-gray-700 text-xs font-semibold transition cursor-pointer"
-                >
-                  Close
-                </button>
+                {/* TECH AWARENESS */}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A97A8]">
+                    TECH AWARENESS
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-[#1E2530] mt-0.5 truncate" title={techAwareness}>
+                    {techAwareness}
+                  </div>
+                </div>
 
-                <button
-                  type="button"
-                  disabled={recruiting || isRecruited || justRecruited}
-                  onClick={handleRecruitClick}
-                  className={`px-6 py-2 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
-                    isRecruited || justRecruited
-                      ? 'bg-emerald-600 text-white cursor-default'
-                      : 'bg-black hover:bg-gray-800 text-white shadow-xs'
-                  }`}
-                >
-                  {recruiting ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Recruiting...
-                    </>
-                  ) : isRecruited || justRecruited ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Recruited
-                    </>
-                  ) : (
-                    <>
-                      <UserCheck className="w-3.5 h-3.5" /> Recruit Candidate
-                    </>
-                  )}
-                </button>
-              </>
-            )}
+                {/* PREFERRED DEVICES */}
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8A97A8]">
+                    PREFERRED DEVICES
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-[#1E2530] mt-0.5 truncate" title={preferredDevices}>
+                    {preferredDevices}
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 

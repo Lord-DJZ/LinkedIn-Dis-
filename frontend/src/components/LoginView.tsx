@@ -115,6 +115,35 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
               </div>
             )}
 
+            {/* Quick autofill pill for real credentials */}
+            {mode === 'login' && (
+              <div className="mb-4 flex items-center justify-between rounded-xl border border-emerald-200/80 bg-emerald-50/60 p-2.5 text-xs text-emerald-950">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                    Real {isCandidate ? 'Candidate' : 'Organization'} Credentials
+                  </span>
+                  <span className="font-mono text-[11px] text-emerald-900">
+                    {isCandidate ? 'candidate@dullnit.com' : 'recruiter@apexglobal.tech'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isCandidate) {
+                      setEmail('candidate@dullnit.com');
+                      setPassword('CandidateSecure2026!');
+                    } else {
+                      setEmail('recruiter@apexglobal.tech');
+                      setPassword('ApexEnterprise2026!');
+                    }
+                  }}
+                  className="rounded-lg bg-emerald-700 px-2.5 py-1 text-[11px] font-semibold text-white shadow-xs transition hover:bg-emerald-800"
+                >
+                  Fill
+                </button>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-3.5">
               {mode === 'register' && <label className="block"><span className="sr-only">Full name</span><input required value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Full name" autoComplete="name" className="auth-input" /></label>}
               {mode === 'register' && !isCandidate && <label className="block"><span className="sr-only">Company name</span><input required value={companyName} onChange={(event) => setCompanyName(event.target.value)} placeholder="Company name" autoComplete="organization" className="auth-input" /></label>}
@@ -140,10 +169,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             </button>
 
             <div className="mt-7 border-t border-black/[0.07] pt-5">
-              <div className="mb-3 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-[#929993]"><span>Explore the product</span><span>Demo access</span></div>
+              <div className="mb-3 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-[#929993]"><span>Explore verified accounts</span><span>One-click login</span></div>
               <div className="grid grid-cols-2 gap-2.5">
-                <button type="button" disabled={loading} onClick={() => handleQuickDemo('candidate')} className="demo-button"><Sparkles className="h-3.5 w-3.5" /> Candidate demo</button>
-                <button type="button" disabled={loading} onClick={() => handleQuickDemo('recruiter')} className="demo-button"><BriefcaseBusiness className="h-3.5 w-3.5" /> Business demo</button>
+                <button type="button" disabled={loading} onClick={() => handleQuickDemo('candidate')} className="demo-button" title="Demuni Jayasmith (candidate@dullnit.com)"><Sparkles className="h-3.5 w-3.5 text-emerald-600" /> Candidate demo</button>
+                <button type="button" disabled={loading} onClick={() => handleQuickDemo('recruiter')} className="demo-button" title="Apex Global Technologies (recruiter@apexglobal.tech)"><BriefcaseBusiness className="h-3.5 w-3.5 text-blue-600" /> Business demo</button>
               </div>
             </div>
           </div>

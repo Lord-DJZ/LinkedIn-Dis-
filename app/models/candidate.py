@@ -35,6 +35,10 @@ class CandidateProfile(Base):
     full_name = Column(String(255), nullable=False)
     headline = Column(String(255), nullable=True)
     bio = Column(Text, nullable=True)
+    avatar_url = Column(String(500), nullable=True)
+    phone = Column(String(50), nullable=True)
+    date_of_birth = Column(String(50), nullable=True)
+    gender = Column(String(20), nullable=True)
     total_years_experience = Column(Float, default=0.0, nullable=False, index=True)
     availability_status = Column(String(50), default="available", nullable=False, index=True)
     profile_visibility = Column(String(50), default="public", nullable=False, index=True)  # public, anonymous, private

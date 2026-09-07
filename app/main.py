@@ -31,6 +31,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Ensure upload directory exists and mount static files
+import os
+from fastapi.staticfiles import StaticFiles
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+
 
 @app.on_event("startup")
 def on_startup():

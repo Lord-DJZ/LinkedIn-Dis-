@@ -85,17 +85,17 @@ class ApiService {
         this.clearToken();
       }
     }
-    // Auto login demo candidate or register
+    // Auto login real candidate or register
     try {
       const res = await this.login({
-        email: 'demuni.test@dullnit.com',
-        password: 'CandidatePassword123!',
+        email: 'candidate@dullnit.com',
+        password: 'CandidateSecure2026!',
       });
       return res.access_token;
     } catch {
       const reg = await this.register({
-        email: 'demuni.test@dullnit.com',
-        password: 'CandidatePassword123!',
+        email: 'candidate@dullnit.com',
+        password: 'CandidateSecure2026!',
         role: 'candidate',
         full_name: 'Demuni Jayasmith',
       });
@@ -115,19 +115,20 @@ class ApiService {
         this.clearToken();
       }
     }
-    // Auto login demo recruiter
+    // Auto login real organization recruiter
     try {
       const res = await this.login({
-        email: 'recruiter@example.com',
-        password: 'RecruiterPass123!',
+        email: 'recruiter@apexglobal.tech',
+        password: 'ApexEnterprise2026!',
       });
       return res.access_token;
     } catch {
       const reg = await this.register({
-        email: 'recruiter@example.com',
-        password: 'RecruiterPass123!',
+        email: 'recruiter@apexglobal.tech',
+        password: 'ApexEnterprise2026!',
         role: 'recruiter',
-        full_name: 'Demo Recruiter',
+        full_name: 'Sarah Jenkins',
+        company_name: 'Apex Global Technologies',
       });
       return reg.access_token;
     }
@@ -162,6 +163,35 @@ class ApiService {
   async removeSkill(skillId: string): Promise<any> {
     return this.request(`/candidates/skills/${skillId}`, {
       method: 'DELETE',
+    });
+  }
+
+  async addExperience(exp: {
+    company: string;
+    original_job_title: string;
+    location?: string;
+    start_date?: string;
+    end_date?: string;
+    is_current?: boolean;
+    description?: string;
+  }): Promise<any> {
+    return this.request('/candidates/experience', {
+      method: 'POST',
+      body: JSON.stringify(exp),
+    });
+  }
+
+  async addEducation(edu: {
+    institution: string;
+    original_degree: string;
+    field_of_study?: string;
+    start_date?: string;
+    end_date?: string;
+    is_current?: boolean;
+  }): Promise<any> {
+    return this.request('/candidates/education', {
+      method: 'POST',
+      body: JSON.stringify(edu),
     });
   }
 
@@ -273,6 +303,30 @@ class ApiService {
   async removeRecruitedCandidate(candidateId: string): Promise<any> {
     return this.request(`/organization/recruit/${candidateId}`, {
       method: 'DELETE',
+    });
+  }
+
+  // Role Switching
+  async switchRole(targetRole: 'candidate' | 'recruiter'): Promise<{ access_token: string; token_type: string; role: string; email: string }> {
+    const res = await this.request<any>('/auth/switch-role', {
+      method: 'POST',
+      body: JSON.stringify({ target_role: targetRole }),
+    });
+    if (res.access_token) {
+      this.setToken(res.access_token);
+    }
+    return res;
+  }
+
+  // Company Directory & Expression of Interest (Candidate View)
+  async exploreOrganizations(): Promise<{ items: any[]; total: number }> {
+    return this.request('/organization/explore');
+  }
+
+  async expressInterest(orgId: string, message?: string): Promise<any> {
+    return this.request(`/organization/${orgId}/express-interest`, {
+      method: 'POST',
+      body: JSON.stringify({ message }),
     });
   }
 

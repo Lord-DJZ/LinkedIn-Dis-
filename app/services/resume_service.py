@@ -188,6 +188,11 @@ class ResumeService:
             # 5. Normalization
             reconciled = self.normalizer.normalize_extraction_result(reconciled)
 
+            # Multimodal Image CV: Link image file as candidate avatar
+            if is_image and doc.stored_file_path:
+                stored_filename = Path(doc.stored_file_path).name
+                reconciled.personal_information.avatar_url = f"http://127.0.0.1:8000/uploads/{stored_filename}"
+
             # Store extraction row
             extraction = self.db.query(ResumeExtraction).filter(ResumeExtraction.resume_id == resume_id).first()
             if not extraction:
@@ -263,6 +268,18 @@ class ResumeService:
             candidate.bio = confirmed_data.professional_information.professional_summary
         if confirmed_data.professional_information.estimated_total_experience_years:
             candidate.total_years_experience = confirmed_data.professional_information.estimated_total_experience_years
+        if getattr(confirmed_data.personal_information, "avatar_url", None):
+            candidate.avatar_url = confirmed_data.personal_information.avatar_url
+        elif doc.stored_file_path:
+            ext = Path(doc.stored_file_path).suffix.lower()
+            if ext in [".png", ".jpg", ".jpeg", ".webp"]:
+                candidate.avatar_url = f"http://127.0.0.1:8000/uploads/{Path(doc.stored_file_path).name}"
+        if getattr(confirmed_data.personal_information, "phone", None):
+            candidate.phone = confirmed_data.personal_information.phone
+        if getattr(confirmed_data.personal_information, "date_of_birth", None):
+            candidate.date_of_birth = confirmed_data.personal_information.date_of_birth
+        if getattr(confirmed_data.personal_information, "gender", None):
+            candidate.gender = confirmed_data.personal_information.gender
 
         # 2. Update Location
         city = confirmed_data.personal_information.city

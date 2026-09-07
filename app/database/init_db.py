@@ -39,7 +39,28 @@ def init_db():
 
     # Create all tables defined in metadata
     Base.metadata.create_all(bind=engine)
-    logger.info("All database tables successfully created.")
+
+    # Safe column migrations for SQLite / local development
+    try:
+        with engine.connect() as conn:
+            columns_to_add = [
+                ("candidate_profiles", "avatar_url", "VARCHAR"),
+                ("candidate_profiles", "phone", "VARCHAR"),
+                ("candidate_profiles", "date_of_birth", "VARCHAR"),
+                ("candidate_profiles", "gender", "VARCHAR"),
+            ]
+            for table, col, col_type in columns_to_add:
+                try:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} {col_type};"))
+                    conn.commit()
+                    logger.info(f"Added column {col} to {table}.")
+                except Exception:
+                    # Column already exists
+                    pass
+    except Exception as e:
+        logger.warning(f"Column migration check note: {e}")
+
+    logger.info("All database tables successfully created and verified.")
 
 
 if __name__ == "__main__":

@@ -5,13 +5,13 @@ import { CandidatePersonaModal } from './CandidatePersonaModal';
 import {
   Search,
   MapPin,
-  Briefcase,
   ChevronDown,
   Loader2,
-  ExternalLink,
   Building2,
-  UserCheck,
   CheckCircle2,
+  Calendar,
+  Phone,
+  AtSign,
 } from 'lucide-react';
 
 interface Flow3Props {
@@ -61,7 +61,6 @@ export const Flow3_RecruiterView: React.FC<Flow3Props> = ({ onGoToOrganization }
       console.error(e);
     }
   };
-
 
   // Calculate active filter count
   useEffect(() => {
@@ -125,70 +124,77 @@ export const Flow3_RecruiterView: React.FC<Flow3Props> = ({ onGoToOrganization }
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-[#f5f7f4] px-4 py-9 font-sans text-[#171917] antialiased sm:px-6 lg:px-8 lg:py-12">
-      <div className="mx-auto max-w-6xl">
+    <div className="min-h-[calc(100vh-65px)] bg-[#FAF7F2] px-4 py-8 font-sans text-[#141413] antialiased sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
 
-        {/* ── TOP SEARCH BAR & ORGANIZATION PORTAL LINK ── */}
+        {/* ── TOP HEADER & ORGANIZATION PORTAL LINK ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#738075]">Talent search</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#151815] sm:text-[40px]">Find the right person.</h1>
-            <p className="mt-2 text-sm text-black/55">Search verified candidate profiles by role, skill, experience, or location.</p>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAE5DE] text-[#635B53] text-xs font-semibold uppercase tracking-wider mb-2">
+              <Building2 className="w-3.5 h-3.5 text-[#141413]" /> Recruiter Workspace
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#141413]">
+              Talent Sourcing & Candidates
+            </h1>
+            <p className="mt-1 text-sm text-[#736B63]">
+              Search verified engineering talent with rich photographic dossier cards.
+            </p>
           </div>
 
           {onGoToOrganization && (
             <button
               type="button"
               onClick={onGoToOrganization}
-              className="self-start sm:self-center flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/15 bg-white hover:bg-black/[0.04] text-xs font-semibold text-gray-900 shadow-xs transition cursor-pointer shrink-0"
+              className="self-start sm:self-center flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#0B0C10] hover:bg-black active:scale-98 text-xs font-bold text-white shadow-sm transition cursor-pointer shrink-0"
             >
-              <Building2 className="w-4 h-4 text-black" />
-              <span>Organization Portal</span>
+              <Building2 className="w-4 h-4 text-white" />
+              <span>Company Pipeline</span>
               {recruitedCount > 0 && (
-                <span className="ml-1 px-2 py-0.5 rounded-full bg-black text-white text-[10px] font-bold">
+                <span className="ml-1.5 px-2 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-bold">
                   {recruitedCount}
                 </span>
               )}
             </button>
           )}
         </div>
+
+        {/* ── SEARCH BAR ── */}
         <form onSubmit={handleSearchSubmit} className="mb-8">
-          <div className="flex items-center gap-3 rounded-[18px] border border-black/[0.08] bg-white p-2 shadow-[0_12px_35px_-28px_rgba(24,35,25,0.4)] transition focus-within:border-black/20">
-            <Search className="w-5 h-5 text-gray-400 ml-2.5 shrink-0" />
+          <div className="flex items-center gap-3 rounded-full border border-[#E8E2D9] bg-white p-1.5 pl-4 shadow-sm transition focus-within:border-[#141413]/30">
+            <Search className="w-4 h-4 text-[#8C827A] shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by keyword, skill or role..."
-              className="w-full bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none"
+              placeholder="Search by skill (FastAPI, PyTorch, React), name, or role..."
+              className="w-full bg-transparent text-xs sm:text-sm text-[#141413] placeholder:text-[#A69E95] focus:outline-none font-medium"
             />
             <button
               type="submit"
               disabled={loading}
-              className="flex h-11 shrink-0 items-center gap-2 rounded-[13px] bg-[#111311] px-7 text-sm font-semibold text-white transition hover:bg-[#262a26] disabled:opacity-60"
+              className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#0B0C10] px-6 text-xs font-bold text-white transition hover:bg-black disabled:opacity-60 active:scale-98 cursor-pointer shadow-xs"
             >
-              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>Search</span>
             </button>
           </div>
         </form>
 
-        {/* ── 2-COLUMN LAYOUT (Filters + Candidate List) ── */}
+        {/* ── 2-COLUMN LAYOUT (Filters Sidebar + Image 1 Candidate Cards Grid) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* ── LEFT SIDEBAR: FILTERS (Matches Screenshot 3 Exactly) ── */}
-          <div className="space-y-6 rounded-[22px] border border-black/[0.07] bg-white p-6 shadow-[0_12px_35px_-28px_rgba(24,35,25,0.4)] lg:col-span-4">
-            
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <h3 className="font-bold text-sm text-gray-900">Filters</h3>
-              <span className="text-xs text-gray-400 font-medium">{activeFilterCount} selected</span>
+          {/* ── LEFT SIDEBAR: FILTERS ── */}
+          <div className="space-y-6 rounded-[24px] border border-[#E8E2D9] bg-white p-6 shadow-sm lg:col-span-3">
+            <div className="flex items-center justify-between border-b border-[#E8E2D9] pb-3">
+              <h3 className="font-bold text-xs uppercase tracking-wider text-[#141413]">Filters</h3>
+              <span className="text-[11px] text-[#8C827A] font-semibold">{activeFilterCount} active</span>
             </div>
 
-            {/* Filter 1: Radius Slider */}
+            {/* Radius Slider */}
             <div>
-              <div className="flex items-center justify-between text-xs font-semibold text-gray-600 mb-2">
-                <span>Radius</span>
-                <span className="text-gray-900 font-bold">{radiusKm} km</span>
+              <div className="flex items-center justify-between text-xs font-semibold text-[#524B43] mb-2">
+                <span>Location Radius</span>
+                <span className="text-[#141413] font-bold">{radiusKm} km</span>
               </div>
               <input
                 type="range"
@@ -197,55 +203,55 @@ export const Flow3_RecruiterView: React.FC<Flow3Props> = ({ onGoToOrganization }
                 step="5"
                 value={radiusKm}
                 onChange={(e) => setRadiusKm(parseInt(e.target.value))}
-                className="w-full accent-black cursor-pointer"
+                className="w-full accent-[#141413] cursor-pointer"
               />
             </div>
 
-            {/* Filter 2: Role category dropdown */}
+            {/* Role Category */}
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-2">
-                Role category
+              <label className="block text-xs font-semibold text-[#524B43] mb-2">
+                Role Domain
               </label>
               <div className="relative">
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
-                  className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-gray-800 font-medium appearance-none focus:outline-none focus:border-black transition cursor-pointer pr-10"
+                  className="w-full bg-white border border-[#E8E2D9] rounded-xl px-3.5 py-2 text-xs text-[#141413] font-medium appearance-none focus:outline-none focus:border-[#141413] transition cursor-pointer pr-9 shadow-2xs"
                 >
                   <option value="All roles">All roles</option>
                   <option value="Software Engineer">Software Engineer</option>
                   <option value="Product Designer">Product Designer</option>
                   <option value="Data Scientist">Data Scientist</option>
                   <option value="AI Engineer">AI Engineer</option>
-                  <option value="Frontend Developer">Frontend Developer</option>
-                  <option value="Backend Developer">Backend Developer</option>
+                  <option value="Cloud Architect">Cloud Architect</option>
+                  <option value="DevOps Lead">DevOps Lead</option>
                 </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#8C827A] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
-            {/* Filter 3: Minimum experience dropdown */}
+            {/* Minimum Experience */}
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-2">
-                Minimum experience
+              <label className="block text-xs font-semibold text-[#524B43] mb-2">
+                Minimum Experience
               </label>
               <div className="relative">
                 <select
                   value={minExp}
                   onChange={(e) => setMinExp(parseInt(e.target.value))}
-                  className="w-full bg-white border border-black/10 rounded-xl px-4 py-2.5 text-xs text-gray-800 font-medium appearance-none focus:outline-none focus:border-black transition cursor-pointer pr-10"
+                  className="w-full bg-white border border-[#E8E2D9] rounded-xl px-3.5 py-2 text-xs text-[#141413] font-medium appearance-none focus:outline-none focus:border-[#141413] transition cursor-pointer pr-9 shadow-2xs"
                 >
-                  <option value={0}>0+ years</option>
+                  <option value={0}>Any Experience</option>
                   <option value={2}>2+ years</option>
-                  <option value={4}>4+ years</option>
-                  <option value={6}>6+ years</option>
+                  <option value={5}>5+ years</option>
                   <option value={8}>8+ years</option>
+                  <option value={12}>12+ years</option>
                 </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#8C827A] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
-            {/* Reset Filters */}
+            {/* Reset Filters Button */}
             {activeFilterCount > 0 && (
               <button
                 type="button"
@@ -255,171 +261,253 @@ export const Flow3_RecruiterView: React.FC<Flow3Props> = ({ onGoToOrganization }
                   setMinExp(0);
                   setSearchQuery('');
                 }}
-                className="text-xs text-gray-500 hover:text-black font-semibold transition cursor-pointer pt-2 block"
+                className="text-xs text-[#8C827A] hover:text-[#141413] font-semibold transition cursor-pointer pt-1 block underline"
               >
                 Reset all filters
               </button>
             )}
-
           </div>
 
-          {/* ── RIGHT COLUMN: CANDIDATES LIST / EMPTY STATE (Matches Screenshot 3) ── */}
-          <div className="lg:col-span-8 space-y-4">
-            
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-gray-900">
-                All candidates ({totalCount})
+          {/* ── RIGHT MAIN: CANDIDATE PORTRAIT CARDS (IMAGE 1 EXACT MATCH) ── */}
+          <div className="lg:col-span-9 space-y-4">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="font-bold text-sm text-[#141413]">
+                Candidates ({totalCount})
               </h3>
               {loading && (
-                <span className="text-xs text-gray-400 flex items-center gap-1">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Searching...
+                <span className="text-xs text-[#8C827A] flex items-center gap-1.5 font-medium">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#141413]" /> Matching profiles...
                 </span>
               )}
             </div>
 
-            {/* If No Candidates: Exact Match to Screenshot 3 */}
+            {/* Empty State */}
             {candidates.length === 0 && !loading && (
-              <div className="rounded-[22px] border border-black/[0.07] bg-white p-16 text-center shadow-[0_12px_35px_-28px_rgba(24,35,25,0.4)]">
-                <p className="text-sm text-gray-400 font-medium">
-                  No candidates match your filters.
+              <div className="rounded-[28px] border border-[#E8E2D9] bg-white p-16 text-center shadow-sm">
+                <p className="text-sm text-[#736B63] font-medium">
+                  No candidate dossiers found matching your current filter criteria.
                 </p>
               </div>
             )}
 
-            {/* If Candidates Exist: Apple-Grade Candidate Cards */}
+            {/* ── 3-COLUMN RECRUITER FINDING CARDS (MATCHES IMAGE 1) ── */}
             {candidates.length > 0 && (
-              <div className="bg-white rounded-2xl border border-black/10 divide-y divide-gray-100 shadow-xs overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {candidates.map((c) => {
-                  const initials = (c.display_name || 'C')
-                    .split(' ')
-                    .map((s) => s[0])
-                    .slice(0, 2)
-                    .join('');
+                  const isRecruited = recruitedIds.has(c.candidate_id);
+                  const isFemale = c.gender?.toLowerCase() === 'female';
+                  const isMale = c.gender?.toLowerCase() === 'male';
+                  const hasPhoto = Boolean(c.avatar_url);
 
+                  // ── CARD VARIANT A: FULL PORTRAIT IMAGE CARD (e.g. Jessica Patrick, David Kim) ──
+                  if (hasPhoto) {
+                    return (
+                      <div
+                        key={c.candidate_id}
+                        onClick={() => handleOpenCandidateDetail(c.candidate_id)}
+                        className="group relative aspect-[3/4] rounded-[28px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer bg-neutral-900 border border-[#E8E2D9] flex flex-col justify-end p-5 select-none"
+                      >
+                        {/* Background Portrait Photo */}
+                        <img
+                          src={c.avatar_url}
+                          alt={c.display_name}
+                          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        />
+
+                        {/* Top-Right Gender Badge (Frosted glass) */}
+                        <div className="absolute top-4 right-4 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white text-sm font-semibold shadow-xs">
+                          {isFemale ? '♀' : isMale ? '♂' : '•'}
+                        </div>
+
+                        {/* Bottom Dark Vignette Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+
+                        {/* Card Foreground Content */}
+                        <div className="relative z-10 text-white">
+                          <h4 className="text-lg font-bold tracking-tight text-white leading-tight mb-2">
+                            {c.display_name}
+                          </h4>
+
+                          <div className="space-y-1 text-xs text-white/90 font-medium mb-3.5">
+                            {c.date_of_birth && (
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                                <span>{c.date_of_birth}</span>
+                              </div>
+                            )}
+
+                            {c.phone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                                <span>{c.phone}</span>
+                              </div>
+                            )}
+
+                            {c.email && (
+                              <div className="flex items-center gap-2">
+                                <AtSign className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                                <span className="truncate">{c.email}</span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-3.5 h-3.5 text-white/80 shrink-0" />
+                              <span className="truncate">
+                                {c.city ? `${c.city}, ${c.country || 'CA'}` : 'San Jose, CA'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Solid Image 4 Pill Button ("Get in touch") */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRecruitCandidate(c.candidate_id);
+                            }}
+                            className={`w-full py-2.5 px-4 rounded-full text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-98 cursor-pointer ${
+                              isRecruited
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-[#0B0C10] hover:bg-black text-white'
+                            }`}
+                          >
+                            {isRecruited ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" /> In Pipeline
+                              </>
+                            ) : (
+                              <>Get in touch</>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // ── CARD VARIANT B: CLEAN WARM IVORY CARD FALLBACK (MATCHES SARAH LOPEZ IN IMAGE 1) ──
                   return (
                     <div
                       key={c.candidate_id}
                       onClick={() => handleOpenCandidateDetail(c.candidate_id)}
-                      className="p-5 sm:p-6 hover:bg-black/[0.02] transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="group relative aspect-[3/4] rounded-[28px] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer bg-[#F5EFE6] border border-[#E8E2D9] flex flex-col justify-between p-6 select-none"
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gray-100 border border-black/10 flex items-center justify-center font-bold text-sm text-gray-800 shrink-0 shadow-2xs">
-                          {initials}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-bold text-base text-gray-900 hover:underline">
-                              {c.display_name}
-                            </h4>
-                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                              {c.availability_status || 'Open to Work'}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600 font-medium mt-0.5">
-                            {c.headline || 'High-Caliber Professional'}
-                          </p>
-
-                          <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="w-3.5 h-3.5" />
-                              {c.city ? `${c.city}, ${c.country}` : 'Remote'}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Briefcase className="w-3.5 h-3.5" />
-                              {c.total_years_experience ?? 0}+ yrs exp
-                            </span>
-                            {c.distance_km !== undefined && (
-                              <span className="text-gray-500 font-medium">
-                                • {Math.round(c.distance_km)} km away
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Skill Tags */}
-                          {c.top_skills && c.top_skills.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-3">
-                              {c.top_skills.slice(0, 5).map((s, sIdx) => (
-                                <span
-                                  key={sIdx}
-                                  className="px-2 py-0.5 rounded-md bg-gray-100 text-[11px] font-medium text-gray-700 border border-gray-200"
-                                >
-                                  {s}
-                                </span>
-                              ))}
-                              {c.top_skills.length > 5 && (
-                                <span className="text-[11px] text-gray-400 self-center">
-                                  +{c.top_skills.length - 5} more
-                                </span>
-                              )}
-                            </div>
-                          )}
+                      {/* Top Header: Name & Gender Badge */}
+                      <div className="flex items-start justify-between">
+                        <h4 className="text-lg font-bold tracking-tight text-[#141413] leading-tight">
+                          {c.display_name}
+                        </h4>
+                        <div className="w-7 h-7 rounded-full bg-[#EAE5DE] border border-[#D9D1C7] flex items-center justify-center text-[#141413] text-sm font-semibold shadow-2xs">
+                          {isFemale ? '♀' : isMale ? '♂' : '•'}
                         </div>
                       </div>
 
-                      <div className="shrink-0 flex items-center gap-2.5 justify-end">
+                      {/* Middle Space (Warm Ivory Canvas) */}
+                      <div className="flex-1" />
+
+                      {/* Bottom Info Block */}
+                      <div>
+                        <div className="space-y-1.5 text-xs text-[#524B43] font-medium mb-4">
+                          {c.date_of_birth && (
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-3.5 h-3.5 text-[#736B63] shrink-0" />
+                              <span>{c.date_of_birth}</span>
+                            </div>
+                          )}
+
+                          {c.phone && (
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-3.5 h-3.5 text-[#736B63] shrink-0" />
+                              <span>{c.phone}</span>
+                            </div>
+                          )}
+
+                          {c.email && (
+                            <div className="flex items-center gap-2">
+                              <AtSign className="w-3.5 h-3.5 text-[#736B63] shrink-0" />
+                              <span className="truncate">{c.email}</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-3.5 h-3.5 text-[#736B63] shrink-0" />
+                            <span className="truncate">
+                              {c.city ? `${c.city}, ${c.country || 'CA'}` : '721 Blossom Hill Rd, San Jose, CA'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Solid Image 4 Pill Button ("Get in touch") */}
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRecruitCandidate(c.candidate_id);
                           }}
-                          disabled={recruitedIds.has(c.candidate_id)}
-                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
-                            recruitedIds.has(c.candidate_id)
-                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
-                              : 'bg-black hover:bg-gray-800 text-white shadow-xs'
+                          className={`w-full py-2.5 px-4 rounded-full text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-98 cursor-pointer ${
+                            isRecruited
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-[#0B0C10] hover:bg-black text-white'
                           }`}
                         >
-                          {recruitedIds.has(c.candidate_id) ? (
+                          {isRecruited ? (
                             <>
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Recruited</span>
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" /> In Pipeline
                             </>
                           ) : (
-                            <>
-                              <UserCheck className="w-3.5 h-3.5" />
-                              <span>Recruit</span>
-                            </>
+                            <>Get in touch</>
                           )}
                         </button>
-
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-900 group-hover:text-black">
-                          <span>View Persona</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </span>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-
           </div>
-
         </div>
 
       </div>
 
-      {/* ── IMAGE 3 MULTI-CARD PERSONA BOARD MODAL ── */}
-      <CandidatePersonaModal
-        isOpen={Boolean(selectedCandidate)}
-        onClose={() => setSelectedCandidate(null)}
-        candidate={selectedCandidate}
-        isSelf={false}
-        onRecruit={handleRecruitCandidate}
-        isRecruited={Boolean(selectedCandidate && recruitedIds.has(selectedCandidate.candidate_id))}
-      />
+      {/* ── CANDIDATE PERSONA / DOSSIER MODAL ── */}
+      {selectedCandidate && (
+        <CandidatePersonaModal
+          isOpen={Boolean(selectedCandidate)}
+          onClose={() => setSelectedCandidate(null)}
+          candidate={{
+            id: selectedCandidate.candidate_id,
+            full_name: selectedCandidate.display_name,
+            headline: selectedCandidate.headline,
+            bio: selectedCandidate.bio,
+            total_years_experience: selectedCandidate.total_years_experience,
+            city: selectedCandidate.city,
+            country: selectedCandidate.country,
+            skills: selectedCandidate.skills?.map((s) => s.name) || [],
+            education: selectedCandidate.education?.map((e) => ({
+              institution: e.institution,
+              degree: e.degree,
+              field: e.field,
+            })) || [],
+            experiences: selectedCandidate.experiences?.map((e) => ({
+              company: e.company,
+              title: e.title,
+              description: e.description,
+            })) || [],
+            persona: selectedCandidate.persona,
+          }}
+          isSelf={false}
+          onRecruit={() => handleRecruitCandidate(selectedCandidate.candidate_id)}
+          isRecruited={recruitedIds.has(selectedCandidate.candidate_id)}
+        />
+      )}
 
-      {/* ── DETAIL LOADING OVERLAY ── */}
       {detailLoading && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-xs flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-5 shadow-xl flex items-center gap-3 border border-black/10">
-            <Loader2 className="w-5 h-5 animate-spin text-black" />
-            <span className="text-xs font-semibold text-gray-800">Loading Candidate Dossier...</span>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 shadow-2xl flex items-center gap-3 border border-[#E8E2D9]">
+            <Loader2 className="w-5 h-5 animate-spin text-[#141413]" />
+            <span className="text-xs font-semibold text-[#141413]">Loading verified dossier...</span>
           </div>
         </div>
       )}
-
     </div>
   );
 };

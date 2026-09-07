@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.schemas.auth import UserRegisterRequest, UserLoginRequest, TokenResponse, UserResponse
 from app.services.auth_service import AuthService
 from app.api.deps import get_current_user
 from app.models.user import User
+from app.core.security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -35,5 +38,43 @@ def get_me(current_user: User = Depends(get_current_user)):
         email=current_user.email,
         role=current_user.role,
         is_active=current_user.is_active,
+        profile_id=profile_id
+    )
+
+
+class SwitchRoleRequest(BaseModel):
+    role: Optional[str] = None
+    target_role: Optional[str] = None
+
+
+class SwitchRoleResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    role: str
+    email: str
+    profile_id: Optional[str] = None
+
+
+@router.post("/switch-role", response_model=SwitchRoleResponse)
+def switch_role(
+    req: SwitchRoleRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Allows user to switch active perspective between candidate and recruiter."""
+    new_role = req.role or req.target_role
+    if new_role not in ["candidate", "recruiter"]:
+        raise HTTPException(status_code=400, detail="Invalid role. Must be 'candidate' or 'recruiter'.")
+    current_user.role = new_role
+    db.commit()
+    db.refresh(current_user)
+
+    token = create_access_token(str(current_user.id), role=new_role)
+    profile_id = current_user.candidate_profile.id if current_user.candidate_profile else None
+    return SwitchRoleResponse(
+        access_token=token,
+        token_type="bearer",
+        role=new_role,
+        email=current_user.email,
         profile_id=profile_id
     )

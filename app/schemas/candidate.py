@@ -85,6 +85,10 @@ class CandidateProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     headline: Optional[str] = None
     bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
     total_years_experience: Optional[float] = Field(None, ge=0)
     availability_status: Optional[str] = Field(None, pattern="^(available|open|not_looking)$")
     profile_visibility: Optional[str] = Field(None, pattern="^(public|anonymous|private)$")
@@ -97,6 +101,10 @@ class CandidateProfileResponse(BaseModel):
     full_name: str
     headline: Optional[str] = None
     bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    phone: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    gender: Optional[str] = None
     total_years_experience: float
     availability_status: str
     profile_visibility: str

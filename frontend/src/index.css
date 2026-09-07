@@ -2,45 +2,45 @@
 
 
 :root {
-  /* Canvas & Surfaces */
-  --bg-canvas: #f0f4f9;
+  /* Canvas & Surfaces (Claude AI Signature Warm Stone & Ivory Palette) */
+  --bg-canvas: #FAF7F2;
   --bg-surface: #ffffff;
-  --bg-surface-frosted: rgba(255, 255, 255, 0.88);
-  --bg-surface-inset: #f8fafc;
-  --bg-accent-soft: rgba(37, 99, 235, 0.07);
+  --bg-surface-frosted: rgba(250, 247, 242, 0.88);
+  --bg-surface-inset: #F4EFEA;
+  --bg-accent-soft: rgba(204, 90, 43, 0.08);
 
-  /* Primary Brand Palette (Cisco plum / Deep Indigo / Electric Blue) */
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-deep: #1e1b4b;
-  --primary-glow: rgba(37, 99, 235, 0.25);
+  /* Claude Brand Accent (Warm Terracotta & Soft Amber) */
+  --primary: #CC5A2B;
+  --primary-hover: #b84f24;
+  --primary-deep: #1F1E1D;
+  --primary-glow: rgba(204, 90, 43, 0.22);
   
-  --brand-purple: #4f46e5;
-  --brand-purple-soft: rgba(79, 70, 229, 0.08);
+  --brand-purple: #7C3AED;
+  --brand-purple-soft: rgba(124, 58, 237, 0.08);
   
-  --accent-cyan: #06b6d4;
-  --accent-red: #ef4444;
-  --accent-green: #10b981;
-  --accent-amber: #f59e0b;
+  --accent-cyan: #0891b2;
+  --accent-red: #e11d48;
+  --accent-green: #059669;
+  --accent-amber: #d97706;
 
-  /* Typography */
-  --text-main: #0f172a;
-  --text-body: #334155;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  /* Typography (Claude Warm Charcoal & Stone Slate) */
+  --text-main: #1F1E1D;
+  --text-body: #4A4641;
+  --text-muted: #6E6A65;
+  --text-light: #9B968F;
 
-  /* Borders */
-  --border-subtle: #e2e8f0;
-  --border-medium: #cbd5e1;
+  /* Borders (Warm Hairline Stone) */
+  --border-subtle: #E8E2D9;
+  --border-medium: #D9D2C7;
   --border-glass: rgba(255, 255, 255, 0.9);
-  --border-active: #2563eb;
+  --border-active: #CC5A2B;
 
-  /* Shadows (Physical Neumorphic & Elevation) */
-  --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
-  --shadow-card-hover: 0 20px 35px -10px rgba(15, 23, 42, 0.12), 0 10px 15px -5px rgba(15, 23, 42, 0.04);
-  --shadow-floating: 0 18px 45px -8px rgba(37, 99, 235, 0.14), 0 10px 20px -5px rgba(0, 0, 0, 0.06);
-  --shadow-inset: inset 2px 2px 5px rgba(166, 180, 200, 0.25), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
-  --shadow-soft: 4px 4px 12px rgba(166, 180, 200, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.9);
+  /* Shadows (Organic Warm Elevation) */
+  --shadow-card: 0 10px 30px -12px rgba(35, 25, 15, 0.07), 0 4px 10px -4px rgba(35, 25, 15, 0.03);
+  --shadow-card-hover: 0 20px 40px -15px rgba(35, 25, 15, 0.12), 0 8px 16px -6px rgba(35, 25, 15, 0.04);
+  --shadow-floating: 0 18px 45px -8px rgba(204, 90, 43, 0.16), 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+  --shadow-inset: inset 2px 2px 5px rgba(180, 170, 155, 0.2), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+  --shadow-soft: 4px 4px 14px rgba(180, 170, 155, 0.18), -4px -4px 14px rgba(255, 255, 255, 0.95);
 
   /* Geometry */
   --radius-xs: 6px;
@@ -53,8 +53,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
-  background: #f5f7f4;
-  color: #171917;
+  background: #FAF7F2;
+  color: #1F1E1D;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
