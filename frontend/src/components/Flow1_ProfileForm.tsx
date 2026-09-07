@@ -519,7 +519,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SCREEN 0: RESUME INPUT SELECTION (REFERENCE IMAGE 1 MATCH - EXPANDED CARD)
+  // SCREEN 0: RESUME INPUT SELECTION (EXACT MATCH TO SOLID BLUE REFERENCE)
   // ═══════════════════════════════════════════════════════════════════════════
   if (currentStep === 'choice') {
     const handleContinueChoice = () => {
@@ -531,11 +531,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
     };
 
     return (
-      <div className="relative min-h-[calc(100vh-80px)] bg-[#F4F8FC] flex items-center justify-center p-4 sm:p-8 md:p-12 font-sans antialiased text-[#111827] overflow-hidden">
-        {/* Soft Ambient Corner Accents matching reference image */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-100/60 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-blue-100/60 blur-3xl pointer-events-none" />
-
+      <div className="fixed inset-0 z-30 bg-[#1E70F9] flex flex-col items-center justify-start sm:justify-center p-4 pt-24 sm:pt-20 pb-8 sm:pb-12 font-sans antialiased text-[#111827] overflow-y-auto select-none">
         {/* Hidden File Input for Resume Upload */}
         <input
           id="choice-resume-file-input"
@@ -546,8 +542,8 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           className="hidden"
         />
 
-        {/* Larger Centered White Card with Subtle Thin Blue Border & Soft Shadow */}
-        <div className="relative z-10 w-full max-w-[860px] sm:max-w-[920px] md:max-w-[980px] bg-white rounded-[32px] sm:rounded-[40px] shadow-[0_24px_70px_-15px_rgba(59,130,246,0.07),0_10px_30px_-10px_rgba(0,0,0,0.03)] border border-[#BFDBFE]/80 sm:border-[1.5px] sm:border-[#C7DCF9] py-16 sm:py-20 md:py-24 px-8 sm:px-16 md:px-20 flex flex-col items-center text-center transition-all">
+        {/* Floating Large Centered Pure White Card (No borders, soft shadow only) */}
+        <div className="w-full max-w-[820px] sm:max-w-[880px] md:max-w-[920px] bg-white rounded-[28px] sm:rounded-[36px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.22),0_10px_25px_-10px_rgba(0,0,0,0.12)] border-0 py-12 sm:py-16 md:py-20 px-6 sm:px-14 md:px-16 flex flex-col items-center text-center transition-all my-auto">
           
           {/* Header Title */}
           <h1 className="text-[28px] sm:text-[34px] md:text-[38px] font-bold text-[#111827] tracking-tight font-sans">
@@ -555,27 +551,27 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-[14px] sm:text-[15.5px] text-[#94A3B8] font-normal mt-3 sm:mt-3.5 mb-10 sm:mb-14">
+          <p className="text-[14px] sm:text-[15.5px] text-[#94A3B8] font-normal mt-2.5 sm:mt-3 mb-8 sm:mb-12">
             Choose how you want to get started.
           </p>
 
           {/* Status / Processing Feedback */}
           {isProcessing && (
-            <div className="mb-8 p-3.5 px-5 rounded-xl bg-blue-50/80 border border-blue-100 flex items-center gap-2.5 text-xs font-semibold text-[#1D4ED8] animate-pulse">
-              <Loader2 className="w-4 h-4 animate-spin text-[#2563EB]" />
+            <div className="mb-6 p-3.5 px-5 rounded-xl bg-blue-50 border border-blue-100 flex items-center gap-2.5 text-xs font-semibold text-[#1D4ED8] animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin text-[#1E70F9]" />
               <span>{pipelineMessage || 'Processing resume file...'}</span>
             </div>
           )}
 
           {errorMessage && (
-            <div className="mb-8 p-3.5 px-5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
+            <div className="mb-6 p-3.5 px-5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
-          {/* Selection Option Cards (Two Compact Boxes with Extra Whitespace) */}
-          <div className="flex items-center justify-center gap-6 sm:gap-8 w-full mb-10 sm:mb-14">
+          {/* Selection Option Cards (Two Compact Boxes) */}
+          <div className="flex items-center justify-center gap-6 sm:gap-8 w-full mb-8 sm:mb-12">
             
             {/* Option 1: Upload Resume */}
             <div
@@ -596,9 +592,9 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               }}
               className={`w-[145px] h-[142px] sm:w-[162px] sm:h-[158px] rounded-[20px] sm:rounded-[24px] flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-all select-none ${
                 dragActive
-                  ? 'border-2 border-[#3B82F6] bg-blue-100/60 ring-4 ring-blue-100 shadow-sm'
+                  ? 'border-2 border-[#1E70F9] bg-blue-100/60 ring-4 ring-blue-100 shadow-sm'
                   : selectedChoice === 'upload'
-                  ? 'border-[1.5px] sm:border-2 border-[#3B82F6] bg-[#F0F7FF] shadow-xs'
+                  ? 'border-[1.5px] sm:border-2 border-[#1E70F9] bg-[#F0F7FF] shadow-xs'
                   : 'border border-[#E2E8F0] bg-white hover:border-[#CBD5E1] shadow-2xs'
               }`}
             >
@@ -646,7 +642,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               onDoubleClick={() => setCurrentStep('contacts')}
               className={`w-[145px] h-[142px] sm:w-[162px] sm:h-[158px] rounded-[20px] sm:rounded-[24px] flex flex-col items-center justify-center p-3 text-center cursor-pointer transition-all select-none ${
                 selectedChoice === 'create'
-                  ? 'border-[1.5px] sm:border-2 border-[#3B82F6] bg-[#F0F7FF] shadow-xs'
+                  ? 'border-[1.5px] sm:border-2 border-[#1E70F9] bg-[#F0F7FF] shadow-xs'
                   : 'border border-[#E2E8F0] bg-white hover:border-[#CBD5E1] shadow-2xs'
               }`}
             >
@@ -683,13 +679,13 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
 
           </div>
 
-          {/* Continue Pill Button */}
+          {/* Continue Pill Button (Exact same blue color as background) */}
           <button
             id="choice-btn-continue"
             type="button"
             onClick={handleContinueChoice}
             disabled={isProcessing}
-            className="h-[48px] sm:h-[50px] px-12 sm:px-14 rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium text-[15px] sm:text-[15.5px] shadow-[0_6px_20px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.45)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="h-[48px] sm:h-[50px] px-12 sm:px-14 rounded-full bg-[#1E70F9] hover:bg-[#165FD8] text-white font-medium text-[15px] sm:text-[15.5px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.18)] transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isProcessing ? (
               <>
