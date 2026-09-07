@@ -67,43 +67,28 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   const [bio, setBio] = useState('');
 
   // Location
-  const [city, setCity] = useState('London');
-  const [country, setCountry] = useState('United Kingdom');
-  const [latitude, setLatitude] = useState(51.5074);
-  const [longitude, setLongitude] = useState(-0.1278);
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
 
   // Career Details
-  const [totalYears, setTotalYears] = useState<number>(4);
-  const [primaryProfession, setPrimaryProfession] = useState('Software Engineering');
-  const [seniorityLevel, setSeniorityLevel] = useState('Senior');
+  const [totalYears, setTotalYears] = useState<number>(0);
+  const [primaryProfession, setPrimaryProfession] = useState('');
+  const [seniorityLevel, setSeniorityLevel] = useState('Junior');
   const [availability, setAvailability] = useState<'Available Now' | 'Open to Offers' | 'Unavailable'>('Available Now');
-  const [desiredSalary, setDesiredSalary] = useState('95,000');
+  const [desiredSalary, setDesiredSalary] = useState('');
   const [currency, setCurrency] = useState('USD');
 
   // Skills
-  const [skills, setSkills] = useState<string[]>(['Python', 'FastAPI', 'React', 'Docker', 'PostgreSQL']);
+  const [skills, setSkills] = useState<string[]>([]);
   const [newSkillDraft, setNewSkillDraft] = useState('');
 
   // Work History
-  const [workHistory, setWorkHistory] = useState<WorkRole[]>([
-    {
-      title: 'Senior Software Engineer',
-      company: 'Tech Innovations Ltd',
-      start_date: '2023',
-      end_date: 'Present',
-      description: 'Architected high-throughput microservices, integrated LLM capabilities, and optimized PostgreSQL performance.',
-    },
-  ]);
+  const [workHistory, setWorkHistory] = useState<WorkRole[]>([]);
 
   // Education
-  const [education, setEducation] = useState<EducationItem[]>([
-    {
-      institution: 'University of Westminster',
-      degree: 'BSc Computer Science',
-      field_of_study: 'Software Engineering & AI',
-      year: '2022',
-    },
-  ]);
+  const [education, setEducation] = useState<EducationItem[]>([]);
 
   // Resume Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -167,13 +152,17 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   const handleFileSelected = async (file: File) => {
     setSelectedFile(file);
     setIsProcessing(true);
-    setErrorMessage(null);
-    setPipelineMessage('Reading document with PyMuPDF / python-docx...');
+    const isImg = file.type.startsWith('image/') || /\.(png|jpe?g|webp)$/i.test(file.name);
+    setPipelineMessage(
+      isImg
+        ? 'Gemini Multimodal Vision analyzing CV image & extracting facts...'
+        : 'Reading document with PyMuPDF / python-docx...'
+    );
 
     try {
       await api.ensureCandidateAuth();
       const uploadRes = await api.uploadResume(file);
-      setPipelineMessage('Gemini 2.5 Flash analyzing resume semantics & extracting dossier...');
+      setPipelineMessage('Gemini 2.5 Flash reconciling candidate dossier...');
       
       const reviewRes = await api.getExtractionReview(uploadRes.id);
       const data: ResumeExtractionResult = reviewRes.reconciled_data;
@@ -554,28 +543,32 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           </div>
         </SectionCard>
 
-        {/* ── SECTION 4: SKILLS & EXPERTISE ── */}
+        {/* ── SECTION 4: SKILLS ── */}
         <SectionCard
           title="Skills"
           subtitle="Add the skills you want to be found for."
         >
-          <div className="flex flex-wrap gap-2 mb-4">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="inline-flex items-center gap-1.5 bg-gray-100 border border-black/10 text-gray-800 text-xs font-medium px-3.5 py-1.5 rounded-full"
-              >
-                <span>{skill}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveSkill(skill)}
-                  className="text-gray-400 hover:text-black transition cursor-pointer"
+          {skills.length === 0 ? (
+            <p className="text-xs text-black/40 italic mb-4">No skills added yet. Type a skill and press Enter or upload your CV below.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="inline-flex items-center gap-1.5 bg-gray-100 border border-black/10 text-gray-800 text-xs font-medium px-3.5 py-1.5 rounded-full"
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
-          </div>
+                  <span>{skill}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSkill(skill)}
+                    className="text-gray-400 hover:text-black transition cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
 
           <form onSubmit={handleAddSkill} className="flex gap-2">
             <input
@@ -609,13 +602,19 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           }
         >
           <div className="space-y-4">
-            {workHistory.map((role, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-black/5 space-y-3 relative group">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Briefcase className="w-3.5 h-3.5 text-gray-500" /> Position #{idx + 1}
-                  </span>
-                  {workHistory.length > 1 && (
+            {workHistory.length === 0 ? (
+              <div className="py-7 text-center border-2 border-dashed border-black/10 rounded-xl bg-[#fafafa]">
+                <Briefcase className="w-6 h-6 text-black/30 mx-auto mb-2" />
+                <p className="text-xs font-medium text-black/50">No professional roles added yet.</p>
+                <p className="text-[11px] text-black/35 mt-0.5">Upload your CV below to auto-populate or click "+ Add Role".</p>
+              </div>
+            ) : (
+              workHistory.map((role, idx) => (
+                <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-black/5 space-y-3 relative group">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Briefcase className="w-3.5 h-3.5 text-gray-500" /> Position #{idx + 1}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleRemoveRole(idx)}
@@ -623,35 +622,35 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                  )}
-                </div>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    value={role.title}
-                    onChange={(e) => handleUpdateRole(idx, 'title', e.target.value)}
-                    placeholder="Job Title (e.g. Lead Fullstack Engineer)"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={role.title}
+                      onChange={(e) => handleUpdateRole(idx, 'title', e.target.value)}
+                      placeholder="Job Title (e.g. Lead Fullstack Engineer)"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
+                    />
+                    <input
+                      type="text"
+                      value={role.company}
+                      onChange={(e) => handleUpdateRole(idx, 'company', e.target.value)}
+                      placeholder="Company Name"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
+                    />
+                  </div>
+
+                  <textarea
+                    value={role.description}
+                    onChange={(e) => handleUpdateRole(idx, 'description', e.target.value)}
+                    rows={2}
+                    placeholder="Key contributions and technologies used..."
                     className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
                   />
-                  <input
-                    type="text"
-                    value={role.company}
-                    onChange={(e) => handleUpdateRole(idx, 'company', e.target.value)}
-                    placeholder="Company Name"
-                    className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
-                  />
                 </div>
-
-                <textarea
-                  value={role.description}
-                  onChange={(e) => handleUpdateRole(idx, 'description', e.target.value)}
-                  rows={2}
-                  placeholder="Key contributions and technologies used..."
-                  className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
-                />
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </SectionCard>
 
@@ -670,13 +669,19 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           }
         >
           <div className="space-y-4">
-            {education.map((item, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-black/5 space-y-3 relative">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <GraduationCap className="w-3.5 h-3.5 text-gray-500" /> Academic Entry #{idx + 1}
-                  </span>
-                  {education.length > 1 && (
+            {education.length === 0 ? (
+              <div className="py-7 text-center border-2 border-dashed border-black/10 rounded-xl bg-[#fafafa]">
+                <GraduationCap className="w-6 h-6 text-black/30 mx-auto mb-2" />
+                <p className="text-xs font-medium text-black/50">No academic qualifications added yet.</p>
+                <p className="text-[11px] text-black/35 mt-0.5">Upload your CV below to auto-populate or click "+ Add Qualification".</p>
+              </div>
+            ) : (
+              education.map((item, idx) => (
+                <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-black/5 space-y-3 relative">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <GraduationCap className="w-3.5 h-3.5 text-gray-500" /> Academic Entry #{idx + 1}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleRemoveEducation(idx)}
@@ -684,34 +689,34 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
-                  )}
-                </div>
+                  </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <input
-                    type="text"
-                    value={item.institution}
-                    onChange={(e) => handleUpdateEducation(idx, 'institution', e.target.value)}
-                    placeholder="Institution / University"
-                    className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
-                  />
-                  <input
-                    type="text"
-                    value={item.degree}
-                    onChange={(e) => handleUpdateEducation(idx, 'degree', e.target.value)}
-                    placeholder="Degree / Diploma"
-                    className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
-                  />
-                  <input
-                    type="text"
-                    value={item.year}
-                    onChange={(e) => handleUpdateEducation(idx, 'year', e.target.value)}
-                    placeholder="Year (e.g. 2024)"
-                    className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      value={item.institution}
+                      onChange={(e) => handleUpdateEducation(idx, 'institution', e.target.value)}
+                      placeholder="Institution / University"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
+                    />
+                    <input
+                      type="text"
+                      value={item.degree}
+                      onChange={(e) => handleUpdateEducation(idx, 'degree', e.target.value)}
+                      placeholder="Degree / Diploma"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
+                    />
+                    <input
+                      type="text"
+                      value={item.year}
+                      onChange={(e) => handleUpdateEducation(idx, 'year', e.target.value)}
+                      placeholder="Year (e.g. 2024)"
+                      className="w-full bg-white border border-black/10 rounded-lg px-3 py-2 text-xs text-gray-900"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </SectionCard>
 
@@ -734,7 +739,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             <input
               id="resume-file-input"
               type="file"
-              accept=".pdf,.docx,.doc"
+              accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,image/*"
               onChange={handleFileInput}
               className="hidden"
             />
@@ -750,7 +755,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                 {selectedFile ? selectedFile.name : 'Click to select or drag & drop your CV file'}
               </p>
               <p className="text-xs text-black/50 mt-1 max-w-sm mx-auto">
-                Supported formats: PDF (.pdf) and Word (.docx, .doc) — Max 10MB
+                Supported formats: PDF, Word (.docx), and Images / PNG / JPG (.png, .jpg, .webp) — Max 10MB
               </p>
             </label>
 

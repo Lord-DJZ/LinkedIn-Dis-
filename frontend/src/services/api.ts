@@ -239,6 +239,55 @@ class ApiService {
   async getSystemStatus(): Promise<any> {
     return this.request('/admin/system/status');
   }
+
+  // Organization & Recruitment
+  async getOrganization(): Promise<any> {
+    return this.request('/organization');
+  }
+
+  async updateOrganization(data: any): Promise<any> {
+    return this.request('/organization', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getRecruitedCandidates(): Promise<{ organization_id: string; organization_name: string; total: number; items: any[] }> {
+    return this.request('/organization/recruited');
+  }
+
+  async recruitCandidate(data: { candidate_id: string; status?: string; recruited_role?: string; notes?: string }): Promise<any> {
+    return this.request('/organization/recruit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateRecruitmentStatus(candidateId: string, data: { status?: string; recruited_role?: string; notes?: string }): Promise<any> {
+    return this.request(`/organization/recruit/${candidateId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async removeRecruitedCandidate(candidateId: string): Promise<any> {
+    return this.request(`/organization/recruit/${candidateId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // AI Configuration & API Key
+  async getApiKeyStatus(): Promise<any> {
+    return this.request('/admin/api-key');
+  }
+
+  async testAndSaveApiKey(apiKey: string): Promise<any> {
+    return this.request('/admin/api-key/test-and-save', {
+      method: 'POST',
+      body: JSON.stringify({ api_key: apiKey }),
+    });
+  }
 }
 
 export const api = new ApiService();
+

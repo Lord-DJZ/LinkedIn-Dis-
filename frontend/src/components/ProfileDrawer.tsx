@@ -20,6 +20,7 @@ interface ProfileDrawerProps {
   currentUser: User | null;
   onGoToProfileBuilder: () => void;
   onLogout: () => void;
+  onOpenPersonaBoard?: () => void;
 }
 
 export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
@@ -28,6 +29,7 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   currentUser,
   onGoToProfileBuilder,
   onLogout,
+  onOpenPersonaBoard,
 }) => {
   const [profile, setProfile] = useState<CandidateProfile | null>(null);
   const [persona, setPersona] = useState<CandidatePersona | null>(null);
@@ -288,14 +290,27 @@ export const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                 </div>
 
                 {/* Actions */}
-                <div className="pt-2 flex items-center gap-2">
+                <div className="pt-2 flex flex-col gap-2">
+                  {onOpenPersonaBoard && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onOpenPersonaBoard();
+                      }}
+                      className="w-full py-2.5 px-4 bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-800 hover:to-indigo-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer shadow-xs"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-purple-200" />
+                      <span>View Persona Board (Image 3 Style)</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
                       onClose();
                       onGoToProfileBuilder();
                     }}
-                    className="flex-1 py-2.5 px-4 bg-black hover:bg-gray-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    className="w-full py-2.5 px-4 bg-black hover:bg-gray-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>Edit Profile Form</span>

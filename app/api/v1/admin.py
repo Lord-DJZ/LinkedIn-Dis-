@@ -115,3 +115,80 @@ def get_system_status(user: User = Depends(require_admin), db: Session = Depends
             "connected": ai_healthy,
         }
     }
+
+
+def _mask_key(key: Optional[str]) -> Optional[str]:
+    if not key:
+        return None
+    clean = key.strip()
+    if len(clean) <= 8:
+        return "••••••••"
+    return f"{clean[:6]}••••••••{clean[-4:]}"
+
+
+from pydantic import BaseModel, Field
+from app.core.config import update_gemini_api_key
+from fastapi import HTTPException
+
+
+class ApiKeySwapRequest(BaseModel):
+    api_key: str = Field(..., min_length=10, description="Google Gemini API Key")
+
+
+@router.get("/api-key")
+def get_api_key_status() -> Dict[str, Any]:
+    """
+    Returns AI configuration and connectivity status.
+    Never exposes the raw API key in plaintext.
+    """
+    has_key = bool(settings.GEMINI_API_KEY and len(settings.GEMINI_API_KEY.strip()) > 5)
+    connected = False
+    if has_key:
+        try:
+            gemini = LLMProviderFactory.get_gemini_provider()
+            connected = gemini.health_check()
+        except Exception:
+            connected = False
+
+    return {
+        "configured": has_key,
+        "masked_key": _mask_key(settings.GEMINI_API_KEY) if has_key else None,
+        "provider": "gemini",
+        "model": settings.GEMINI_MODEL,
+        "fallback_model": settings.GEMINI_FALLBACK_MODEL,
+        "connected": connected,
+    }
+
+
+@router.post("/api-key/test-and-save")
+def test_and_save_api_key(payload: ApiKeySwapRequest) -> Dict[str, Any]:
+    """
+    Tests the provided Gemini API key against Google Gemini API.
+    If valid, hot-swaps it into memory and persists to .env.
+    """
+    new_key = payload.api_key.strip()
+    if not new_key:
+        raise HTTPException(status_code=400, detail="API key cannot be empty.")
+
+    gemini = LLMProviderFactory.get_gemini_provider(api_key=new_key)
+    try:
+        test_result = gemini.test_connection(candidate_api_key=new_key)
+    except Exception as e:
+        error_msg = str(e)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Gemini API connection test failed: {error_msg}"
+        )
+
+    # Save to memory and .env
+    update_gemini_api_key(new_key)
+
+    return {
+        "success": True,
+        "configured": True,
+        "masked_key": _mask_key(new_key),
+        "latency_ms": test_result.get("latency_ms", 0),
+        "model": test_result.get("model", settings.GEMINI_MODEL),
+        "message": "Gemini API key verified and saved successfully."
+    }
+

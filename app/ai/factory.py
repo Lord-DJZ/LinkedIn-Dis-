@@ -28,3 +28,8 @@ class LLMProviderFactory:
         else:
             logger.warning(f"Unknown AI_PROVIDER '{provider_name}'; falling back to FakeLLMProvider.")
             return FakeLLMProvider()
+
+    @classmethod
+    def get_gemini_provider(cls, api_key: Optional[str] = None) -> GeminiLLMProvider:
+        return GeminiLLMProvider(api_key=api_key or settings.GEMINI_API_KEY)
+

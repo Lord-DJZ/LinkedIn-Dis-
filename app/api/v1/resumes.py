@@ -43,8 +43,8 @@ def upload_resume(
     db: Session = Depends(get_db)
 ):
     """
-    Upload a resume file (PDF or DOCX).
-    Text extraction and parsing are processed automatically.
+    Upload a resume or CV file (PDF, DOCX, PNG, JPG, WEBP).
+    Text extraction and multimodal visual parsing are processed automatically.
     """
     service = ResumeService(db)
     doc = service.upload_resume(

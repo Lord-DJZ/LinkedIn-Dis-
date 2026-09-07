@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -47,3 +48,26 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def update_gemini_api_key(new_key: str):
+    """Updates GEMINI_API_KEY in memory and writes/updates .env on disk."""
+    settings.GEMINI_API_KEY = new_key
+
+    env_path = Path(".env")
+    lines = []
+    found = False
+    if env_path.exists():
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith("GEMINI_API_KEY="):
+                    lines.append(f'GEMINI_API_KEY="{new_key}"\n')
+                    found = True
+                else:
+                    lines.append(line)
+    if not found:
+        lines.append(f'\nGEMINI_API_KEY="{new_key}"\n')
+
+    with open(env_path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+

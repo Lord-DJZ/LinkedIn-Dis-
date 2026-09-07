@@ -5,16 +5,22 @@ import { LoginView } from './components/LoginView';
 import { AppNavbar } from './components/AppNavbar';
 import { ProfileDrawer } from './components/ProfileDrawer';
 import { Flow1_ProfileForm } from './components/Flow1_ProfileForm';
-import { Flow2_PersonaView } from './components/Flow2_PersonaView';
 import { Flow3_RecruiterView } from './components/Flow3_RecruiterView';
+import { OrganizationView } from './components/OrganizationView';
+import { CandidatePersonaModal, type PersonaModalCandidate } from './components/CandidatePersonaModal';
+import { FloatingApiHUD } from './components/FloatingApiHUD';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 
 export function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'profile' | 'persona' | 'search'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'search' | 'organization'>('profile');
   const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState<boolean>(false);
   const [showTelemetryModal, setShowTelemetryModal] = useState<boolean>(false);
+
+  // Self Persona Board state (Image 3 style)
+  const [showSelfPersonaModal, setShowSelfPersonaModal] = useState<boolean>(false);
+  const [selfPersonaCandidate, setSelfPersonaCandidate] = useState<PersonaModalCandidate | null>(null);
 
   // Check existing session on mount
   useEffect(() => {
@@ -52,6 +58,64 @@ export function App() {
     api.clearToken();
     setCurrentUser(null);
     setIsProfileDrawerOpen(false);
+    setShowSelfPersonaModal(false);
+  };
+
+  const loadSelfPersonaCandidate = async (): Promise<PersonaModalCandidate | null> => {
+    try {
+      const [pRes, perRes] = await Promise.allSettled([
+        api.getMyProfile(),
+        api.getPersona(),
+      ]);
+      const p = pRes.status === 'fulfilled' ? pRes.value : null;
+      const per = perRes.status === 'fulfilled' ? perRes.value : undefined;
+
+      if (p && p.full_name) {
+        const cand: PersonaModalCandidate = {
+          id: p.id,
+          full_name: p.full_name,
+          headline: p.headline || per?.headline,
+          bio: p.bio || per?.summary,
+          total_years_experience: p.total_years_experience ?? 0,
+          city: p.location?.city,
+          country: p.location?.country,
+          availability_status: p.availability_status,
+          desired_salary: (p as any).desired_salary ? String((p as any).desired_salary) : undefined,
+          skills: p.skills?.map((s: any) => s.normalized_name || s.original_name) || [],
+          education: p.education?.map((e: any) => ({
+            institution: e.institution,
+            degree: e.original_degree || e.normalized_degree_type || '',
+            field: e.field_of_study,
+            year: e.end_date,
+          })) || [],
+          experiences: p.experiences?.map((e: any) => ({
+            company: e.company,
+            title: e.original_job_title || (e as any).title || '',
+            start: e.start_date,
+            end: e.end_date || (e.is_current ? 'Present' : undefined),
+            description: e.description,
+          })) || [],
+          persona: per,
+        };
+        setSelfPersonaCandidate(cand);
+        return cand;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    return null;
+  };
+
+  const handleOpenProfileOrPersona = async () => {
+    if (!currentUser) return;
+    if (currentUser.role === 'candidate') {
+      const cand = await loadSelfPersonaCandidate();
+      if (cand) {
+        setShowSelfPersonaModal(true);
+        return;
+      }
+    }
+    setIsProfileDrawerOpen(true);
   };
 
   if (!authChecked) {
@@ -76,7 +140,7 @@ export function App() {
         user={currentUser}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenProfileDrawer={() => setIsProfileDrawerOpen(true)}
+        onOpenProfileDrawer={handleOpenProfileOrPersona}
         onOpenTelemetry={() => setShowTelemetryModal(true)}
       />
 
@@ -84,20 +148,25 @@ export function App() {
       <main className="w-full flex-1">
         {activeTab === 'profile' && (
           <Flow1_ProfileForm
-            onProfileSaved={() => {
-              // Automatically open the profile drawer so candidate sees their new AI dossier!
-              setIsProfileDrawerOpen(true);
+            onProfileSaved={async () => {
+              const cand = await loadSelfPersonaCandidate();
+              if (cand) {
+                setShowSelfPersonaModal(true);
+              } else {
+                setIsProfileDrawerOpen(true);
+              }
             }}
           />
         )}
-        {activeTab === 'persona' && (
-          <Flow2_PersonaView
-            onGoToUpload={() => setActiveTab('profile')}
-            onRegenerate={() => {}}
+        {activeTab === 'search' && (
+          <Flow3_RecruiterView
+            onGoToOrganization={() => setActiveTab('organization')}
           />
         )}
-        {activeTab === 'search' && (
-          <Flow3_RecruiterView />
+        {activeTab === 'organization' && (
+          <OrganizationView
+            onGoToSearch={() => setActiveTab('search')}
+          />
         )}
       </main>
 
@@ -110,6 +179,24 @@ export function App() {
           setActiveTab('profile');
         }}
         onLogout={handleLogout}
+        onOpenPersonaBoard={async () => {
+          const cand = await loadSelfPersonaCandidate();
+          if (cand) {
+            setShowSelfPersonaModal(true);
+          }
+        }}
+      />
+
+      {/* ── CANDIDATE'S OWN PERSONA BOARD (IMAGE 3 MULTI-CARD STYLE) ── */}
+      <CandidatePersonaModal
+        isOpen={showSelfPersonaModal}
+        onClose={() => setShowSelfPersonaModal(false)}
+        candidate={selfPersonaCandidate}
+        isSelf={true}
+        onEditProfile={() => {
+          setShowSelfPersonaModal(false);
+          setActiveTab('profile');
+        }}
       />
 
       {/* ── SYSTEM ARCHITECTURE & AI TELEMETRY MODAL ── */}
@@ -174,6 +261,9 @@ export function App() {
           </div>
         </div>
       )}
+
+      {/* ── FLOATING GEMINI API KEY SWAP HUD ── */}
+      <FloatingApiHUD />
 
     </div>
   );

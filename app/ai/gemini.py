@@ -99,6 +99,93 @@ class GeminiLLMProvider(LLMProvider):
         )
         return response.text or ""
 
+    def set_api_key(self, api_key: str):
+        """Hot-swaps the Gemini API key and re-initializes client."""
+        self.api_key = api_key
+        self.client = genai.Client(api_key=api_key)
+
+    def test_connection(self, candidate_api_key: Optional[str] = None) -> dict:
+        """Tests live API key connectivity and returns latency and model details."""
+        test_key = candidate_api_key or self.api_key
+        if not test_key:
+            raise ResumeExtractionException("API key is empty.", error_code="API_KEY_MISSING")
+
+        client_to_test = genai.Client(api_key=test_key)
+        start_time = time.time()
+        res = client_to_test.models.generate_content(
+            model=self.primary_model,
+            contents="ping"
+        )
+        latency_ms = int((time.time() - start_time) * 1000)
+        if not res or not res.text:
+            raise ValueError("Received empty test response from Gemini model.")
+        return {
+            "connected": True,
+            "latency_ms": latency_ms,
+            "model": self.primary_model,
+            "message": f"Successfully verified Gemini connection in {latency_ms}ms."
+        }
+
+    def extract_text_from_file(self, file_path: str, mime_type: str) -> str:
+        """Uses Gemini Multimodal to transcribe text from image CVs (PNG, JPG) and scanned PDFs."""
+        if not self.client:
+            raise ResumeExtractionException("Gemini API key is not configured.", error_code="AI_NOT_CONFIGURED")
+
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
+
+        file_part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
+        prompt = (
+            "You are an expert CV transcription system. "
+            "Extract and transcribe all text from this resume/CV document cleanly, "
+            "accurately preserving all candidate details including contact info, professional summary, "
+            "work experience (company, title, dates, descriptions), education (institution, degree, field, dates), "
+            "and skills/certifications."
+        )
+        config = types.GenerateContentConfig(
+            system_instruction="Transcribe the document accurately with clear section headings."
+        )
+        response = self.client.models.generate_content(
+            model=self.primary_model,
+            contents=[file_part, prompt],
+            config=config
+        )
+        return response.text or ""
+
+    def generate_structured_from_file(
+        self,
+        file_path: str,
+        mime_type: str,
+        response_schema: Type[T],
+        system_instruction: Optional[str] = None
+    ) -> T:
+        """Extracts structured schema directly from image CVs (PNG, JPG) or PDFs using Gemini vision."""
+        if not self.client:
+            raise ResumeExtractionException("Gemini API key is not configured.", error_code="AI_NOT_CONFIGURED")
+
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
+
+        file_part = types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
+        prompt = (
+            "Analyze this resume/CV document visually and extract all candidate facts "
+            "into the strict structured schema. Correctly parse dates, company names, "
+            "job titles, skills, and education."
+        )
+        config = types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            response_mime_type="application/json",
+            response_schema=response_schema,
+        )
+        response = self.client.models.generate_content(
+            model=self.primary_model,
+            contents=[file_part, prompt],
+            config=config
+        )
+        if not response.text:
+            raise ValueError("Empty response received from Gemini model.")
+        return response_schema.model_validate_json(response.text)
+
     def health_check(self) -> bool:
         if not self.client:
             return False

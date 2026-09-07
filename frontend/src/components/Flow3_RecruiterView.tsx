@@ -1,18 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import type { CandidateSearchResult, RecruiterCandidateDetail } from '../types';
+import { CandidatePersonaModal } from './CandidatePersonaModal';
 import {
   Search,
   MapPin,
   Briefcase,
   ChevronDown,
   Loader2,
-  Sparkles,
-  X,
   ExternalLink,
+  Building2,
+  UserCheck,
+  CheckCircle2,
 } from 'lucide-react';
 
-export const Flow3_RecruiterView: React.FC = () => {
+interface Flow3Props {
+  onGoToOrganization?: () => void;
+}
+
+export const Flow3_RecruiterView: React.FC<Flow3Props> = ({ onGoToOrganization }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [radiusKm, setRadiusKm] = useState(100);
   const [selectedRole, setSelectedRole] = useState('All roles');
@@ -23,9 +29,39 @@ export const Flow3_RecruiterView: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [activeFilterCount, setActiveFilterCount] = useState(0);
 
+  // Recruited tracking state
+  const [recruitedIds, setRecruitedIds] = useState<Set<string>>(new Set());
+  const [recruitedCount, setRecruitedCount] = useState(0);
+
   // Selected candidate detail modal
   const [selectedCandidate, setSelectedCandidate] = useState<RecruiterCandidateDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  const fetchRecruitedInfo = async () => {
+    try {
+      const data = await api.getRecruitedCandidates();
+      const ids = new Set<string>((data.items || []).map((r: any) => r.candidate_id));
+      setRecruitedIds(ids);
+      setRecruitedCount(data.total || data.items?.length || 0);
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchRecruitedInfo();
+  }, []);
+
+  const handleRecruitCandidate = async (candidateId: string) => {
+    try {
+      await api.recruitCandidate({ candidate_id: candidateId });
+      setRecruitedIds((prev) => new Set([...prev, candidateId]));
+      setRecruitedCount((prev) => prev + 1);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
 
   // Calculate active filter count
   useEffect(() => {
@@ -92,11 +128,29 @@ export const Flow3_RecruiterView: React.FC = () => {
     <div className="min-h-[calc(100vh-65px)] bg-[#f5f7f4] px-4 py-9 font-sans text-[#171917] antialiased sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-6xl">
 
-        {/* ── TOP SEARCH BAR (Matches Screenshot 3 Exactly) ── */}
-        <div className="mb-7">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#738075]">Talent search</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#151815] sm:text-[40px]">Find the right person.</h1>
-          <p className="mt-2 text-sm text-black/55">Search verified candidate profiles by role, skill, experience, or location.</p>
+        {/* ── TOP SEARCH BAR & ORGANIZATION PORTAL LINK ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#738075]">Talent search</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#151815] sm:text-[40px]">Find the right person.</h1>
+            <p className="mt-2 text-sm text-black/55">Search verified candidate profiles by role, skill, experience, or location.</p>
+          </div>
+
+          {onGoToOrganization && (
+            <button
+              type="button"
+              onClick={onGoToOrganization}
+              className="self-start sm:self-center flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/15 bg-white hover:bg-black/[0.04] text-xs font-semibold text-gray-900 shadow-xs transition cursor-pointer shrink-0"
+            >
+              <Building2 className="w-4 h-4 text-black" />
+              <span>Organization Portal</span>
+              {recruitedCount > 0 && (
+                <span className="ml-1 px-2 py-0.5 rounded-full bg-black text-white text-[10px] font-bold">
+                  {recruitedCount}
+                </span>
+              )}
+            </button>
+          )}
         </div>
         <form onSubmit={handleSearchSubmit} className="mb-8">
           <div className="flex items-center gap-3 rounded-[18px] border border-black/[0.08] bg-white p-2 shadow-[0_12px_35px_-28px_rgba(24,35,25,0.4)] transition focus-within:border-black/20">
@@ -302,9 +356,35 @@ export const Flow3_RecruiterView: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="shrink-0 flex items-center justify-end">
+                      <div className="shrink-0 flex items-center gap-2.5 justify-end">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRecruitCandidate(c.candidate_id);
+                          }}
+                          disabled={recruitedIds.has(c.candidate_id)}
+                          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                            recruitedIds.has(c.candidate_id)
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
+                              : 'bg-black hover:bg-gray-800 text-white shadow-xs'
+                          }`}
+                        >
+                          {recruitedIds.has(c.candidate_id) ? (
+                            <>
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Recruited</span>
+                            </>
+                          ) : (
+                            <>
+                              <UserCheck className="w-3.5 h-3.5" />
+                              <span>Recruit</span>
+                            </>
+                          )}
+                        </button>
+
                         <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-900 group-hover:text-black">
-                          <span>View Dossier</span>
+                          <span>View Persona</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </span>
                       </div>
@@ -320,96 +400,15 @@ export const Flow3_RecruiterView: React.FC = () => {
 
       </div>
 
-      {/* ── CANDIDATE DETAIL MODAL ── */}
-      {selectedCandidate && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-black/10 max-h-[90vh] overflow-y-auto relative">
-            <button
-              type="button"
-              onClick={() => setSelectedCandidate(null)}
-              className="absolute right-5 top-5 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 transition cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center font-bold text-xl shadow-xs">
-                {(selectedCandidate.display_name || 'C').slice(0, 2).toUpperCase()}
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-950">
-                  {selectedCandidate.display_name}
-                </h3>
-                <p className="text-xs text-gray-600 font-medium mt-0.5">
-                  {selectedCandidate.headline || 'High-Caliber Professional'}
-                </p>
-                <div className="flex items-center gap-3 text-xs text-gray-400 mt-2">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5" />
-                    {selectedCandidate.city ? `${selectedCandidate.city}, ${selectedCandidate.country}` : 'Remote'}
-                  </span>
-                  <span>•</span>
-                  <span>{selectedCandidate.total_years_experience ?? 0}+ Years Exp</span>
-                </div>
-              </div>
-            </div>
-
-            {/* AI Persona Archetype if available */}
-            {selectedCandidate.persona && (
-              <div className="p-4 rounded-2xl bg-purple-50/80 border border-purple-100 mb-6">
-                <div className="flex items-center gap-2 text-purple-900 font-bold text-xs mb-1">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                  <span>AI Persona Focus: {selectedCandidate.persona.primary_profession || selectedCandidate.persona.headline}</span>
-                </div>
-                <p className="text-xs text-purple-950 leading-relaxed">
-                  {selectedCandidate.persona.summary}
-                </p>
-              </div>
-            )}
-
-            {/* Bio */}
-            {selectedCandidate.bio && (
-              <div className="mb-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-                  About Candidate
-                </h4>
-                <p className="text-xs text-gray-700 leading-relaxed">
-                  {selectedCandidate.bio}
-                </p>
-              </div>
-            )}
-
-            {/* Verified Skills */}
-            {selectedCandidate.skills && selectedCandidate.skills.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                  Core Competencies
-                </h4>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedCandidate.skills.map((s, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-gray-800 text-xs font-medium"
-                    >
-                      {s.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="pt-4 border-t border-gray-100 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setSelectedCandidate(null)}
-                className="px-6 py-2.5 rounded-full bg-black text-white text-xs font-semibold hover:bg-gray-800 transition cursor-pointer"
-              >
-                Close Dossier
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── IMAGE 3 MULTI-CARD PERSONA BOARD MODAL ── */}
+      <CandidatePersonaModal
+        isOpen={Boolean(selectedCandidate)}
+        onClose={() => setSelectedCandidate(null)}
+        candidate={selectedCandidate}
+        isSelf={false}
+        onRecruit={handleRecruitCandidate}
+        isRecruited={Boolean(selectedCandidate && recruitedIds.has(selectedCandidate.candidate_id))}
+      />
 
       {/* ── DETAIL LOADING OVERLAY ── */}
       {detailLoading && (

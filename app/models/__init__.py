@@ -12,6 +12,7 @@ from app.models.candidate import (
 from app.models.resume import ResumeDocument, ResumeExtraction, ResumeStatus
 from app.models.persona import CandidatePersona
 from app.models.audit import AuditEvent
+from app.models.organization import Organization, RecruitedCandidate
 
 __all__ = [
     "User",
@@ -31,4 +32,7 @@ __all__ = [
     "ResumeStatus",
     "CandidatePersona",
     "AuditEvent",
+    "Organization",
+    "RecruitedCandidate",
 ]
+

@@ -1,11 +1,11 @@
 import React from 'react';
 import type { User } from '../types';
-import { Search, ShieldCheck, User as UserIcon, FileText, Sparkles } from 'lucide-react';
+import { Search, ShieldCheck, User as UserIcon, FileText } from 'lucide-react';
 
 interface AppNavbarProps {
   user: User | null;
-  activeTab: 'profile' | 'persona' | 'search';
-  setActiveTab: (tab: 'profile' | 'persona' | 'search') => void;
+  activeTab: 'profile' | 'search' | 'organization';
+  setActiveTab: (tab: 'profile' | 'search' | 'organization') => void;
   onOpenProfileDrawer: () => void;
   onOpenTelemetry: () => void;
 }
@@ -35,7 +35,7 @@ export const AppNavbar: React.FC<AppNavbarProps> = ({
           </span>
         </div>
 
-        {/* Center: Clean Pill Navigation matching INSPIRE.TXT */}
+        {/* Center: Clean 2-Pill Navigation (Profile & Search) */}
         <nav
           className="flex items-center gap-1 rounded-full bg-[#eef0ec] p-1 border border-black/5 shrink-0"
           aria-label="Primary navigation"
@@ -43,7 +43,7 @@ export const AppNavbar: React.FC<AppNavbarProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer select-none ${
+            className={`flex items-center gap-1.5 rounded-full px-5 py-1.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer select-none ${
               activeTab === 'profile'
                 ? 'bg-[#111311] text-white shadow-xs font-semibold'
                 : 'text-[#556056] hover:text-[#111311] hover:bg-black/5'
@@ -56,23 +56,9 @@ export const AppNavbar: React.FC<AppNavbarProps> = ({
 
           <button
             type="button"
-            onClick={() => setActiveTab('persona')}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer select-none ${
-              activeTab === 'persona'
-                ? 'bg-[#111311] text-white shadow-xs font-semibold'
-                : 'text-[#556056] hover:text-[#111311] hover:bg-black/5'
-            }`}
-            aria-current={activeTab === 'persona' ? 'page' : undefined}
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Persona</span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setActiveTab('search')}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer select-none ${
-              activeTab === 'search'
+            className={`flex items-center gap-1.5 rounded-full px-5 py-1.5 text-xs font-medium transition-all whitespace-nowrap cursor-pointer select-none ${
+              activeTab === 'search' || activeTab === 'organization'
                 ? 'bg-[#111311] text-white shadow-xs font-semibold'
                 : 'text-[#556056] hover:text-[#111311] hover:bg-black/5'
             }`}
