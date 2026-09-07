@@ -4,7 +4,11 @@ export interface User {
   role: 'candidate' | 'recruiter' | 'admin';
   is_active: boolean;
   profile_id?: string;
+  full_name?: string;
+  company_name?: string;
 }
+
+export type AccountRole = 'candidate' | 'recruiter';
 
 export interface TokenResponse {
   access_token: string;

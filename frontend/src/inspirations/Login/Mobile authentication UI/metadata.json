@@ -1,0 +1,6 @@
+{
+  "name": "Authentication UI",
+  "description": "Clean mobile login UI featuring a minimal luxury 3D animated header scene with flowing white-beige ribbons and floating spheres.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

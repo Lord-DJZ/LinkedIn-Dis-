@@ -9,30 +9,20 @@ import type {
 } from '../types';
 import { localStore } from './localStore';
 
-// Detect if running on localhost or on a static/cloud host (e.g. Vercel)
+// Detect if running on a static host without a specified backend URL (e.g. Vercel)
 const isLocalhost =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' ||
    window.location.hostname === '127.0.0.1' ||
    window.location.hostname === '0.0.0.0');
 
-const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim();
-
-// On static cloud deployments (e.g. https://*.vercel.app):
-// Mixed content policy strictly forbids calling insecure 'http://' URLs.
-// Moreover, cloud static hosts have no local backend on port 8000.
-// We ONLY use a configured backend URL if it is a genuine secure HTTPS URL.
-// If not configured, we set API_BASE_URL to null, routing 100% of operations
-// to our client persistence engine (localStore) with 0ms latency and 0 network failures.
-const isSecureRemoteUrl =
-  Boolean(rawApiUrl && rawApiUrl.startsWith('https://') && !rawApiUrl.includes('localhost') && !rawApiUrl.includes('127.0.0.1'));
-
-const API_BASE_URL = isLocalhost
-  ? (rawApiUrl || 'http://localhost:8000/api/v1')
-  : (isSecureRemoteUrl ? rawApiUrl : null);
+const configuredApiUrl = import.meta.env.VITE_API_URL;
+// If user explicitly gave VITE_API_URL, use it. If on localhost, default to port 8000.
+// If deployed on Vercel without a configured backend URL, default to standalone client engine.
+const API_BASE_URL = configuredApiUrl || (isLocalhost ? 'http://localhost:8000/api/v1' : null);
 
 class ApiService {
-  private isBackendAvailable: boolean = API_BASE_URL !== null;
+  private isBackendAvailable: boolean = true;
 
   private getToken(): string | null {
     return localStorage.getItem('dullnit_token');
@@ -92,9 +82,6 @@ class ApiService {
       return await response.json();
     } catch (networkError: unknown) {
       this.isBackendAvailable = false;
-      if (networkError instanceof TypeError || (networkError instanceof Error && networkError.message.includes('fetch'))) {
-        throw new Error('BACKEND_OFFLINE_OR_STATIC');
-      }
       throw networkError;
     }
   }

@@ -1,25 +1,42 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Eye, EyeOff, Loader2, CheckCircle2, X, AlertCircle, Sparkles, Briefcase } from 'lucide-react';
-import { api } from '../services/api';
-import type { User, AccountRole } from '../types';
+import { Eye, EyeOff, Loader2, CheckCircle2, X } from 'lucide-react';
 
-interface LoginViewProps {
-  onLoginSuccess: (user: User, activeRole: AccountRole) => void;
-}
-
-export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
+export default function AuthenticationPage() {
   const [isExpanded, setIsExpanded] = useState(false);
+
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [role, setRole] = useState<'candidate' | 'recruiter'>('candidate');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [forgotPasswordNotice, setForgotPasswordNotice] = useState(false);
   const [useIframeFallback, setUseIframeFallback] = useState(false);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Preload video on initial mount so it is ready before user clicks
+  useEffect(() => {
+    const video = document.createElement('video');
+    video.src = '/media-loop.mp4';
+    video.preload = 'auto';
+    video.muted = true;
+    video.playsInline = true;
+
+    const handleReady = () => {
+      setIsVideoLoaded(true);
+    };
+
+    video.addEventListener('canplaythrough', handleReady);
+    video.load();
+
+    return () => {
+      video.removeEventListener('canplaythrough', handleReady);
+    };
+  }, []);
 
   // Form states
   const [email, setEmail] = useState('');
@@ -27,121 +44,32 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
   const [fullName, setFullName] = useState('');
   const [companyName, setCompanyName] = useState('');
 
-  // Preload video so media is ready
-  useEffect(() => {
-    const video = document.createElement('video');
-    video.src = '/media-loop.mp4';
-    video.preload = 'auto';
-    video.muted = true;
-    video.playsInline = true;
-    video.load();
-
-    return () => {
-      video.src = '';
-    };
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);
-    setErrorMessage(null);
     setIsSuccess(false);
 
-    try {
-      if (mode === 'signin') {
-        const response = await api.login({ email, password });
-        api.setToken(response.access_token);
-        const me = await api.getMe();
-        const actualRole: AccountRole = me.role === 'recruiter' ? 'recruiter' : 'candidate';
-        setIsSuccess(true);
-        setTimeout(() => {
-          onLoginSuccess(me, actualRole);
-        }, 600);
-      } else {
-        const response = await api.register({
-          email,
-          password,
-          role,
-          full_name: fullName.trim() || (role === 'candidate' ? 'New Candidate' : 'Business Partner'),
-          ...(role === 'recruiter' ? { company_name: companyName.trim() || 'My Organization' } : {}),
-        });
-        api.setToken(response.access_token);
-        const me = await api.getMe();
-        setIsSuccess(true);
-        setTimeout(() => {
-          onLoginSuccess(me, role);
-        }, 600);
-      }
-    } catch (caughtError: unknown) {
-      setErrorMessage(
-        caughtError instanceof Error
-          ? caughtError.message
-          : 'Authentication failed. Please verify your details and try again.'
-      );
-    } finally {
+    // Simulate authenticating/creating account
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
+    }, 1200);
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     if (isLoading) return;
     setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      const googleEmail =
-        mode === 'signup'
-          ? `${fullName ? fullName.toLowerCase().replace(/\s+/g, '.') : 'user'}.auth@gmail.com`
-          : email || 'candidate@dullnit.com';
-
-      const response =
-        mode === 'signin'
-          ? await api.login({ email: googleEmail, password: 'GoogleVerifiedAuth2026!' })
-          : await api.register({
-              email: googleEmail,
-              password: 'GoogleVerifiedAuth2026!',
-              role,
-              full_name: fullName.trim() || (role === 'candidate' ? 'Google Candidate' : 'Google Partner'),
-              ...(role === 'recruiter' ? { company_name: companyName.trim() || 'Google Partner Org' } : {}),
-            });
-
-      api.setToken(response.access_token);
-      const me = await api.getMe();
+    setTimeout(() => {
+      setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
-        onLoginSuccess(me, role);
-      }, 600);
-    } catch (caughtError: unknown) {
-      setErrorMessage(
-        caughtError instanceof Error ? caughtError.message : 'Google authentication unavailable.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemo = async (demoRole: AccountRole) => {
-    setIsLoading(true);
-    setErrorMessage(null);
-    try {
-      if (demoRole === 'candidate') {
-        await api.ensureCandidateAuth();
-      } else {
-        await api.ensureRecruiterAuth();
-      }
-      const me = await api.getMe();
-      setIsSuccess(true);
-      setTimeout(() => {
-        onLoginSuccess(me, demoRole);
-      }, 500);
-    } catch (caughtError: unknown) {
-      setErrorMessage(
-        caughtError instanceof Error ? caughtError.message : 'The demo account is not available right now.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
+        setIsSuccess(false);
+      }, 3000);
+    }, 1000);
   };
 
   const handleForgotPassword = (e: React.MouseEvent) => {
@@ -149,7 +77,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     setForgotPasswordNotice(true);
     setTimeout(() => {
       setForgotPasswordNotice(false);
-    }, 4000);
+    }, 3500);
   };
 
   const handleCardClick = () => {
@@ -163,7 +91,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       id="main-container"
       className="min-h-screen w-full bg-[#f4f5f7] flex items-center justify-center p-4 sm:p-6 md:p-8 font-sans antialiased selection:bg-black selection:text-white relative"
     >
-      {/* Hidden preloader video */}
+      {/* Preloader to ensure all media buffers before user clicks */}
       <video
         src="/media-loop.mp4"
         preload="auto"
@@ -171,9 +99,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
         playsInline
         aria-hidden="true"
         className="hidden pointer-events-none"
+        onCanPlayThrough={() => setIsVideoLoaded(true)}
       />
 
-      {/* Expandable Authentication Card */}
+      {/* ONE Single Expandable Card Component */}
       <motion.div
         id="auth-card"
         layout
@@ -187,7 +116,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             : 'max-w-[420px] rounded-[32px] sm:rounded-[36px] shadow-[0_16px_50px_-12px_rgba(0,0,0,0.06)] hover:shadow-[0_22px_60px_-10px_rgba(0,0,0,0.1)] hover:border-black/10 p-8 sm:p-10 flex flex-col items-center justify-center text-center cursor-pointer group select-none active:scale-[0.99]'
         }`}
       >
-        {/* COLLAPSED STATE */}
+        {/* INITIAL COLLAPSED STATE */}
         {!isExpanded && (
           <motion.div
             id="collapsed-content"
@@ -199,12 +128,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             transition={{ duration: 0.3 }}
             className="w-full flex flex-col items-center justify-center py-4"
           >
-            <div className="w-11 h-11 rounded-2xl bg-black flex items-center justify-center text-white mb-4 shadow-sm group-hover:scale-105 transition-transform">
-              <span className="font-bold text-lg tracking-tight">D</span>
-            </div>
             <h1
               id="initial-welcome-title"
-              className="text-[30px] sm:text-[34px] font-bold text-[#111827] tracking-tight leading-tight group-hover:text-black transition-colors"
+              className="text-[32px] sm:text-[34px] font-bold text-[#111827] tracking-tight leading-tight group-hover:text-black transition-colors"
             >
               Welcome Back!
             </h1>
@@ -214,17 +140,13 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             >
               Enter Your Details Below
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f4f5f7] group-hover:bg-[#ebeef2] text-xs font-semibold text-[#374151] transition-colors">
-              <span>Click anywhere to continue</span>
-              <span className="text-sm">→</span>
-            </div>
           </motion.div>
         )}
 
-        {/* EXPANDED STATE */}
+        {/* EXPANDED STATE: REVEALS BOTH LEFT MEDIA AND RIGHT FORM */}
         {isExpanded && (
           <>
-            {/* Collapse Button */}
+            {/* Collapse / Close Button */}
             <button
               id="collapse-card-btn"
               type="button"
@@ -239,21 +161,20 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
               <X className="w-4 h-4" />
             </button>
 
-            {/* LEFT SIDE: Media Visual Scene */}
+            {/* LEFT SIDE: Media Area with Seamless Forward-Backward Looping Visual */}
             <motion.div
               id="auth-left-media-area"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
-              className="w-full md:w-[48%] lg:w-[49%] bg-[#edf0f4] rounded-[28px] md:rounded-[34px] min-h-[300px] sm:min-h-[380px] md:min-h-[560px] border border-black/[0.04] flex-shrink-0 relative overflow-hidden flex items-center justify-center shadow-inner"
+              className="w-full md:w-[48%] lg:w-[49%] bg-[#edf0f4] rounded-[28px] md:rounded-[34px] min-h-[340px] sm:min-h-[420px] md:min-h-[560px] border border-black/[0.04] flex-shrink-0 relative overflow-hidden flex items-center justify-center shadow-inner"
             >
               {!useIframeFallback ? (
                 <video
                   ref={videoRef}
                   id="media-area-video"
                   src="/media-loop.mp4"
-                  poster="/media-poster.jpg"
                   autoPlay
                   loop
                   muted
@@ -273,11 +194,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                 />
               )}
 
-              {/* Inner ring overlay */}
+              {/* Crisp inner border overlay for smooth edge contour */}
               <div className="absolute inset-0 rounded-[28px] md:rounded-[34px] pointer-events-none ring-1 ring-inset ring-black/[0.04]" />
             </motion.div>
 
-            {/* RIGHT SIDE: Authentication Form */}
+            {/* RIGHT SIDE: Complete Authentication Form */}
             <motion.div
               id="auth-right-form-section"
               initial={{ opacity: 0, y: 12 }}
@@ -303,7 +224,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                   </p>
                 </div>
 
-                {/* Status & Feedback Notifications */}
+                {/* Notifications: Success or Forgot Password Notice */}
                 <AnimatePresence>
                   {isSuccess && (
                     <motion.div
@@ -315,24 +236,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       <span>
                         {mode === 'signin'
-                          ? 'Successfully signed in! Entering workspace...'
-                          : 'Account created! Entering workspace...'}
+                          ? 'Successfully logged in!'
+                          : 'Account created successfully!'}
                       </span>
                     </motion.div>
                   )}
-
-                  {errorMessage && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                      className="w-full mt-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm rounded-xl flex items-center gap-2 text-left"
-                    >
-                      <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-                      <span>{errorMessage}</span>
-                    </motion.div>
-                  )}
-
                   {forgotPasswordNotice && (
                     <motion.div
                       initial={{ opacity: 0, y: -8, scale: 0.96 }}
@@ -340,7 +248,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                       exit={{ opacity: 0, y: -8, scale: 0.96 }}
                       className="w-full mt-4 p-3 bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm rounded-xl text-center"
                     >
-                      Password reset instructions sent to your email.
+                      Password reset link sent to your email.
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -361,7 +269,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                         onClick={() => setRole('candidate')}
                         className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all cursor-pointer ${
                           role === 'candidate'
-                            ? 'bg-white text-[#111827] shadow-sm font-semibold'
+                            ? 'bg-white text-[#111827] shadow-sm'
                             : 'text-[#6b7280] hover:text-[#111827]'
                         }`}
                       >
@@ -373,7 +281,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                         onClick={() => setRole('recruiter')}
                         className={`flex-1 py-2 text-sm font-medium rounded-xl transition-all cursor-pointer ${
                           role === 'recruiter'
-                            ? 'bg-white text-[#111827] shadow-sm font-semibold'
+                            ? 'bg-white text-[#111827] shadow-sm'
                             : 'text-[#6b7280] hover:text-[#111827]'
                         }`}
                       >
@@ -382,7 +290,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                     </motion.div>
                   )}
 
-                  {/* Form */}
+                  {/* Complete Form */}
                   <form id="auth-form" onSubmit={handleSubmit} className="w-full space-y-4">
                     {/* Full Name field (Sign Up only) */}
                     {mode === 'signup' && (
@@ -458,7 +366,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                           id="input-password"
                           type={showPassword ? 'text' : 'password'}
                           required
-                          minLength={6}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Enter your password"
@@ -534,6 +441,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                         disabled={isLoading}
                         className="w-full h-12 rounded-2xl bg-[#f3f4f6] hover:bg-[#e5e7eb] active:scale-[0.99] text-[#18181b] font-medium text-[15px] transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
                       >
+                        {/* Standard Google 'G' 4-color icon */}
                         <svg
                           className="w-5 h-5 flex-shrink-0"
                           viewBox="0 0 24 24"
@@ -572,10 +480,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                           <button
                             id="auth-switch-mode-btn"
                             type="button"
-                            onClick={() => {
-                              setMode('signup');
-                              setErrorMessage(null);
-                            }}
+                            onClick={() => setMode('signup')}
                             className="font-semibold text-[#111827] hover:underline cursor-pointer focus:outline-none"
                           >
                             Sign Up
@@ -587,10 +492,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                           <button
                             id="auth-switch-mode-btn"
                             type="button"
-                            onClick={() => {
-                              setMode('signin');
-                              setErrorMessage(null);
-                            }}
+                            onClick={() => setMode('signin')}
                             className="font-semibold text-[#111827] hover:underline cursor-pointer focus:outline-none"
                           >
                             Sign In
@@ -598,33 +500,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                         </>
                       )}
                     </p>
-                  </div>
-
-                  {/* Discrete Demo Playground with Fake Sample Data */}
-                  <div className="w-full mt-7 pt-5 border-t border-[#f1f2f4] flex flex-col items-center">
-                    <span className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider mb-2.5">
-                      Or Preview Demo (Fake Data)
-                    </span>
-                    <div className="grid grid-cols-2 gap-2.5 w-full">
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo('candidate')}
-                        disabled={isLoading}
-                        className="py-2.5 px-3 rounded-xl border border-[#e5e7eb] bg-[#fafafa] hover:bg-white hover:border-[#111827] text-xs font-semibold text-[#374151] hover:text-[#111827] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Candidate Demo</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo('recruiter')}
-                        disabled={isLoading}
-                        className="py-2.5 px-3 rounded-xl border border-[#e5e7eb] bg-[#fafafa] hover:bg-white hover:border-[#111827] text-xs font-semibold text-[#374151] hover:text-[#111827] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Briefcase className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Recruiter Demo</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -634,4 +509,4 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       </motion.div>
     </main>
   );
-};
+}

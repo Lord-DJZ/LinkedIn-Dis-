@@ -1,0 +1,6 @@
+{
+  "name": "Authentication UI",
+  "description": "A clean modern authentication card replica with expand transition, sign-in, and sign-up workflows.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
