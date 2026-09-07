@@ -10,6 +10,9 @@ import {
   HelpCircle,
   Bookmark,
   ChevronRight,
+  Search,
+  ArrowLeft,
+  ArrowRight,
 } from 'lucide-react';
 
 interface JobRole {
@@ -38,6 +41,8 @@ interface CompanyItem {
   description?: string;
   engineers_count: string;
   founded_year: string;
+  image_url: string;
+  bg_color: string;
   roles: JobRole[];
 }
 
@@ -48,7 +53,7 @@ export const CompanyDirectoryView: React.FC = () => {
   const [submittedOrgs, setSubmittedOrgs] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Selected job for Job Description View (Image 4 Match)
+  // Selected job for Job Description View Modal
   const [selectedJob, setSelectedJob] = useState<{ company: CompanyItem; job: JobRole } | null>(null);
   const [savedJobs, setSavedJobs] = useState<Record<string, boolean>>({});
   const [appliedJobs, setAppliedJobs] = useState<Record<string, boolean>>({});
@@ -60,7 +65,6 @@ export const CompanyDirectoryView: React.FC = () => {
   const loadCompanies = async () => {
     try {
       setLoading(true);
-      // Hardcoded high-fidelity verified dataset matching Image 3 and Image 4
       const companyData: CompanyItem[] = [
         {
           id: 'org-synth-2',
@@ -70,6 +74,8 @@ export const CompanyDirectoryView: React.FC = () => {
           website: 'https://synthetixlabs.ai',
           engineers_count: '140+',
           founded_year: '2021',
+          image_url: '/company_synth.png',
+          bg_color: '#DFEBFD',
           tech_stack: ['PyTorch', 'Python', 'Next.js', 'Redis', 'Kubernetes'],
           description:
             'A place where machine learning researchers and applied AI engineers build sovereign neural runtimes and real-time agent workflows.',
@@ -134,6 +140,8 @@ export const CompanyDirectoryView: React.FC = () => {
           website: 'https://apexglobal.tech',
           engineers_count: '250+',
           founded_year: '2018',
+          image_url: '/company_apex.png',
+          bg_color: '#E2FAE2',
           tech_stack: ['FastAPI', 'Python', 'React', 'Docker', 'PostgreSQL', 'PyTorch'],
           description:
             'Engineering resilient cloud intelligence platforms, low-latency search infrastructure, and next-generation AI agent runtimes for Fortune 500 enterprises.',
@@ -150,52 +158,55 @@ export const CompanyDirectoryView: React.FC = () => {
               match_score: 96,
               match_count: '6 of 6 core skills matched',
               description:
-                'We are seeking a seasoned Principal Cloud Architect to lead the design and execution of our multi-region distributed compute fabric.\n\nYou will work directly with executive engineering leaders to architect ultra-low latency APIs, scale vector search pipelines, and ensure 99.999% platform availability across global clusters.',
+                'Architect the next evolution of our global real-time inference mesh. You will design fault-tolerant microservices and low-latency API gateways across multi-region deployments.',
               responsibilities: [
-                'Architect horizontally scalable microservices handling 50k+ requests per second with sub-50ms latency.',
-                'Implement robust observability, fault-tolerance mechanisms, and zero-trust authentication across services.',
-                'Partner with product teams to embed agentic AI workflows and asynchronous job runners.',
+                'Design high-throughput, sub-10ms distributed serving architecture for LLM reasoning engines.',
+                'Partner with product teams to translate enterprise SLAs into robust infrastructure blueprints.',
+                'Oversee zero-trust security postures and compliance across our cloud edge networks.',
               ],
               qualifications: [
-                '8+ years of distributed backend engineering experience with Python, FastAPI, and Go.',
-                'Demonstrated expertise in PostgreSQL indexing, Redis caching patterns, and Docker/Kubernetes.',
-                'Strong leadership in technical roadmap authoring and code review excellence.',
+                'Demonstrated mastery of distributed systems, Go or Python, and Kubernetes architecture.',
+                'Experience scaling mission-critical platforms handling millions of queries per minute.',
+                'Strong background in cloud networking, Terraform, and automated deployment topologies.',
               ],
             },
             {
               id: 'job-apex-2',
               title: 'Senior Full-Stack AI Engineer',
-              location: 'San Jose, CA',
+              location: 'Remote, US',
               salary: '$150K/yr - $195K/yr',
               is_remote: true,
               job_type: 'Full-time',
               posted_days_ago: 4,
-              applicants_count: 83,
-              match_score: 92,
-              match_count: '5 of 5 core skills matched',
+              applicants_count: 73,
+              match_score: 91,
+              match_count: '5 of 6 core skills matched',
               description:
-                'Build intuitive, high-velocity web applications powered by generative AI backends. You will bridge complex neural APIs with seamless, interactive user experiences.',
+                'Bridge intuitive user experiences with high-performance generative models. You will craft reactive web applications and real-time streaming interfaces.',
               responsibilities: [
-                'Develop responsive, accessible user interfaces using React, TypeScript, and Tailwind CSS.',
-                'Integrate FastAPI endpoints and SSE streaming pipelines for real-time AI responses.',
-                'Profile client-side bundle performance and optimize rendering bottlenecks.',
+                'Develop highly reactive web interfaces with React, TypeScript, and Tailwind CSS.',
+                'Implement robust streaming WebSocket backends using Python FastAPI and Redis.',
+                'Optimize client-side performance, state management, and user interaction feedback loops.',
               ],
               qualifications: [
-                '5+ years building modern web applications with React, TypeScript, and modern CSS.',
-                'Comfort with Python backend development, REST API design, and asynchronous state.',
+                '5+ years building full-stack applications with modern web stacks.',
+                'Experience with streaming LLM completions, agent memory systems, and vector search.',
+                'Eye for clean UI craft and fluid micro-interactions.',
               ],
             },
           ],
         },
         {
-          id: 'org-meridian-3',
+          id: 'org-meridian-1',
           name: 'Meridian Health Data Corp',
-          industry: 'Bioinformatics & Predictive Analytics',
+          industry: 'Genomics & Digital Healthcare',
           location: 'Boston, MA',
-          website: 'https://meridianhealth.io',
+          website: 'https://meridiandata.org',
           engineers_count: '85+',
           founded_year: '2020',
-          tech_stack: ['Python', 'PostGIS', 'TypeScript', 'FastAPI', 'AWS'],
+          image_url: '/company_meridian.png',
+          bg_color: '#FEEAE1',
+          tech_stack: ['Python', 'Docker', 'GCP', 'PostgreSQL', 'FastAPI'],
           description:
             'Building high-throughput genomic data ingestion, compliant FHIR microservices, and clinical predictive analytics copilots for healthcare networks.',
           roles: [
@@ -228,7 +239,7 @@ export const CompanyDirectoryView: React.FC = () => {
 
       setCompanies(companyData);
     } catch {
-      // offline fallback handled by setCompanies above
+      // fallback
     } finally {
       setLoading(false);
     }
@@ -240,7 +251,6 @@ export const CompanyDirectoryView: React.FC = () => {
       await api.expressInterest(org.id, 'Candidate dossier submitted directly via Company Directory.');
       setSubmittedOrgs((prev) => ({ ...prev, [org.id]: true }));
     } catch {
-      // Optimistic completion for smooth candidate UX
       setSubmittedOrgs((prev) => ({ ...prev, [org.id]: true }));
     } finally {
       setSubmittingOrgId(null);
@@ -271,147 +281,199 @@ export const CompanyDirectoryView: React.FC = () => {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 animate-fadeIn font-sans text-[#141413]">
+    <div className="w-full flex justify-center py-6 sm:py-8 px-4 sm:px-6 animate-fadeIn font-sans">
       
-      {/* ── HEADER BANNER ── */}
-      <div className="mb-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EAE5DE] text-[#635B53] text-[11px] font-bold uppercase tracking-wider mb-2">
-              <Building2 className="w-3.5 h-3.5 text-[#141413]" /> Company Directory
+      {/* ── MAIN DASHBOARD CONTAINER (WHITE FLOATING WORKSPACE) ── */}
+      <div className="w-full max-w-[1240px] bg-white rounded-[28px] sm:rounded-[36px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.22)] p-6 sm:p-10 md:p-12 relative overflow-hidden">
+
+        {/* ── HEADER & HERO SECTION ── */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-10">
+          
+          {/* Left: Titles, Description, Search Bar */}
+          <div className="flex-1 max-w-2xl">
+            {/* Small Label Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F1F5F9] text-[#475569] text-[11px] font-bold uppercase tracking-wider mb-4">
+              <Building2 className="w-3.5 h-3.5 text-[#1E293B]" />
+              <span>COMPANY DIRECTORY</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#141413] tracking-tight font-serif">
-              Explore Hiring Companies
+
+            {/* Main Heading */}
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold text-[#0F172A] tracking-tight leading-[1.15] mb-3">
+              Explore Hiring<br className="hidden sm:inline" /> Companies
             </h1>
-            <p className="text-xs sm:text-sm text-[#736B63] mt-1 max-w-2xl leading-relaxed">
+
+            {/* Description */}
+            <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-xl mb-6">
               Explore organizations actively recruiting. Review tech stacks, open positions, and submit your candidate dossier directly to engineering hiring managers.
             </p>
-          </div>
 
-          {/* Quick Search Bar */}
-          <div className="sm:w-80">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search stack, company, city..."
-              className="w-full px-4 py-3 rounded-2xl bg-white border border-[#E8E2D9] text-xs font-medium text-[#141413] placeholder-[#A69E95] focus:outline-none focus:ring-2 focus:ring-[#141413]/20 shadow-xs transition"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Loading Skeleton */}
-      {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3].map((idx) => (
-            <div
-              key={idx}
-              className="bg-[#F6F3EE] rounded-[32px] p-8 border border-[#E8E2D9] animate-pulse space-y-4"
-            >
-              <div className="h-4 bg-[#EAE5DE] rounded-full w-1/3" />
-              <div className="h-7 bg-[#EAE5DE] rounded-xl w-3/4" />
-              <div className="h-16 bg-[#EAE5DE] rounded-2xl w-full" />
-              <div className="h-12 bg-[#EAE5DE] rounded-2xl w-full" />
+            {/* Search Bar */}
+            <div className="relative max-w-md">
+              <Search className="w-4 h-4 text-[#94A3B8] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search stack, company, city..."
+                className="w-full pl-11 pr-4 py-3 rounded-full bg-white border border-[#E2E8F0] text-xs font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#1E70F9]/30 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition"
+              />
             </div>
-          ))}
+          </div>
+
+          {/* Right: Hero Graphic & Slogan (Abstract shape + Cursive "Find your next opportunity" + Blue Icon + Slogan) */}
+          <div className="relative shrink-0 flex items-center justify-end">
+            {/* Pale Blue Organic Blob Background Shape */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[340px] h-[220px] bg-[#F0F6FF] rounded-full blur-2xl -z-10 pointer-events-none opacity-80" />
+            
+            <div className="relative flex items-center gap-6 pr-2 sm:pr-4">
+              {/* Handwritten / Cursive callout with curved arrow */}
+              <div className="hidden sm:flex flex-col items-end text-right">
+                <span className="text-[#3B82F6] text-sm font-medium italic font-serif leading-tight">
+                  Find your<br />next opportunity
+                </span>
+                {/* Minimal SVG curved arrow pointing towards the building icon */}
+                <svg
+                  className="w-8 h-6 text-[#3B82F6] mt-1 -rotate-6"
+                  viewBox="0 0 40 30"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M 5 10 C 15 25, 25 25, 35 15" />
+                  <path d="M 28 16 L 35 15 L 34 22" />
+                </svg>
+              </div>
+
+              {/* Blue Circular Icon */}
+              <div className="w-12 h-12 rounded-full bg-[#1E70F9] text-white flex items-center justify-center shadow-md shadow-[#1E70F9]/30 shrink-0">
+                <Building2 className="w-6 h-6 text-white" />
+              </div>
+
+              {/* Slogan Text */}
+              <div className="max-w-[200px]">
+                <h3 className="text-base sm:text-lg font-extrabold text-[#0F172A] leading-tight mb-1">
+                  Great companies build great people
+                </h3>
+                <p className="text-xs text-[#64748B] leading-snug">
+                  Discover teams that value talent, growth, and impact.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
-      )}
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          HIRING COMPANIES CARDS (IMAGE 3 EXACT MATCH)
-          - Rounded-[32px], soft ivory background (#F6F3EE)
-          - "ABOUT THE COMPANY" uppercase tracking tag
-          - Big bold title & clean description
-          - Big stats columns: Members / Engineers & Online / Open Roles
-          - Two rectangular rounded buttons: [ View Roles ] and [ Submit Dossier ]
-          - Bottom meta: Founded year & location
-      ═══════════════════════════════════════════════════════════════════ */}
-      {!loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCompanies.map((company) => {
-            const hasSubmitted = submittedOrgs[company.id];
-            const isSubmitting = submittingOrgId === company.id;
-
-            return (
+        {/* Loading Skeleton */}
+        {loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {[1, 2, 3].map((idx) => (
               <div
-                key={company.id}
-                className="group relative"
+                key={idx}
+                className="bg-[#F8FAFC] rounded-[28px] p-6 border border-[#E2E8F0] animate-pulse space-y-4"
               >
-                {/* Subtle Layered Card Shadow Effect (Image 3 match) */}
-                <div className="absolute inset-0 bg-[#E8E2D9]/40 rounded-[32px] translate-y-2 translate-x-1 -z-10 group-hover:translate-y-3 transition-transform duration-200"></div>
+                <div className="h-4 bg-[#E2E8F0] rounded-full w-1/3" />
+                <div className="h-7 bg-[#E2E8F0] rounded-xl w-3/4" />
+                <div className="h-16 bg-[#E2E8F0] rounded-2xl w-full" />
+                <div className="h-12 bg-[#E2E8F0] rounded-2xl w-full" />
+              </div>
+            ))}
+          </div>
+        )}
 
-                {/* Main Card Container */}
-                <div className="bg-[#F6F3EE] rounded-[32px] p-7 sm:p-8 border border-[#E8E2D9] shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-                  
+        {/* ── 3 PASTEL COMPANY CARDS (EXACT REFERENCE REPRODUCTION) ── */}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {filteredCompanies.map((company) => {
+              const hasSubmitted = submittedOrgs[company.id];
+              const isSubmitting = submittingOrgId === company.id;
+
+              return (
+                <div
+                  key={company.id}
+                  style={{ backgroundColor: company.bg_color }}
+                  className="rounded-[28px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-md border border-black/5"
+                >
                   <div>
-                    {/* Top Header: Uppercase tag + Three dots ... */}
+                    {/* Top Row: Tag + Three dots */}
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-[10px] font-bold text-[#8C827A] uppercase tracking-[0.18em]">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-[0.16em]">
                         ABOUT THE COMPANY
                       </span>
                       <button
                         type="button"
                         title="Company Options"
-                        className="text-[#8C827A] hover:text-[#141413] p-1 rounded-lg hover:bg-black/5 transition cursor-pointer"
+                        className="text-[#64748B] hover:text-[#0F172A] p-1 rounded-lg hover:bg-black/5 transition cursor-pointer"
                       >
-                        <MoreHorizontal className="w-5 h-5" />
+                        <MoreHorizontal className="w-4 h-4" />
                       </button>
                     </div>
 
-                    {/* Company Title */}
-                    <h2 className="text-xl sm:text-2xl font-bold text-[#141413] tracking-tight leading-snug mb-2 font-serif">
-                      {company.name}
-                    </h2>
+                    {/* Company Name & Building Image Row */}
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1">
+                        <h2 className="text-xl font-extrabold text-[#0F172A] tracking-tight leading-snug mb-2">
+                          {company.name}
+                        </h2>
+                        <p className="text-xs text-[#475569] leading-relaxed line-clamp-4">
+                          {company.description}
+                        </p>
+                      </div>
 
-                    {/* Description Paragraph */}
-                    <p className="text-xs sm:text-sm text-[#59524C] leading-relaxed mb-6 font-normal">
-                      {company.description}
-                    </p>
+                      {/* Right-side Building Thumbnail */}
+                      <div className="w-24 h-28 sm:w-28 sm:h-32 shrink-0 rounded-2xl overflow-hidden shadow-xs bg-white/50">
+                        <img
+                          src={company.image_url}
+                          alt={company.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
 
-                    {/* Stats Row (Exact Image 3 match: 13.5K Members  47 Online) */}
-                    <div className="grid grid-cols-2 gap-4 pb-6 border-b border-[#E8E2D9]/70 mb-6">
+                    {/* Statistics Row: Engineers Count & Open Roles Count */}
+                    <div className="flex items-center gap-8 py-3 my-2">
                       <div>
-                        <div className="text-xl sm:text-2xl font-bold text-[#141413] tracking-tight">
+                        <div className="text-2xl font-black text-[#0F172A] tracking-tight">
                           {company.engineers_count}
                         </div>
-                        <div className="text-xs text-[#736B63] font-medium mt-0.5">
+                        <div className="text-xs text-[#64748B] font-medium mt-0.5">
                           Engineers
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-xl sm:text-2xl font-bold text-[#141413] tracking-tight">
+                        <div className="text-2xl font-black text-[#0F172A] tracking-tight">
                           {company.roles.length}
                         </div>
-                        <div className="text-xs text-[#736B63] font-medium mt-0.5">
+                        <div className="text-xs text-[#64748B] font-medium mt-0.5">
                           Open Roles
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Action Buttons Row (Image 3 exact match: [ Joined ] and [ Create Post ]) */}
-                  <div>
+                  {/* Bottom Actions: View Roles & Submit Dossier */}
+                  <div className="pt-2">
                     <div className="grid grid-cols-2 gap-3">
-                      {/* Left Button: View Roles */}
+                      {/* Left: View Roles */}
                       <button
                         type="button"
                         onClick={() => setSelectedJob({ company, job: company.roles[0] })}
-                        className="rounded-xl border border-[#141413]/25 bg-white hover:bg-[#FAF7F2] text-[#141413] text-xs sm:text-sm font-bold py-3 px-3 transition cursor-pointer text-center shadow-2xs"
+                        className="rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-[#0F172A] text-xs font-bold py-3 px-3 transition cursor-pointer text-center shadow-xs border border-black/5"
                       >
                         View Roles ({company.roles.length})
                       </button>
 
-                      {/* Right Button: Submit Dossier */}
+                      {/* Right: Submit Dossier */}
                       <button
                         type="button"
                         disabled={isSubmitting || hasSubmitted}
                         onClick={() => handleSubmitDossier(company)}
-                        className={`rounded-xl text-xs sm:text-sm font-bold py-3 px-3 transition shadow-xs cursor-pointer text-center flex items-center justify-center gap-1.5 ${
+                        className={`rounded-xl text-xs font-bold py-3 px-3 transition shadow-xs cursor-pointer text-center flex items-center justify-center gap-1.5 ${
                           hasSubmitted
                             ? 'bg-emerald-600 text-white cursor-default'
-                            : 'bg-[#141413] hover:bg-black active:scale-98 text-white'
+                            : 'bg-[#1E70F9] hover:bg-[#155FD0] active:scale-98 text-white'
                         }`}
                       >
                         {hasSubmitted ? (
@@ -426,67 +488,119 @@ export const CompanyDirectoryView: React.FC = () => {
                         )}
                       </button>
                     </div>
-
-                    {/* Bottom Created Meta (Image 3 match: Created Feb.7, 2021) */}
-                    <div className="mt-4 pt-3 border-t border-[#E8E2D9]/50 flex items-center justify-between text-[11px] text-[#8C827A] font-medium">
-                      <span>Founded {company.founded_year}</span>
-                      <span>{company.location}</span>
-                    </div>
                   </div>
 
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
 
-      {/* ═══════════════════════════════════════════════════════════════════
-          JOB DESCRIPTION MODAL / DETAIL VIEW (IMAGE 4 EXACT MATCH)
-          - Header: SynergisticIT style company line + Three dots
-          - Huge Job Title: "Junior data analyst/data scientist/ML/AI engineer"
-          - Meta: Arlington, VA • 3 days ago • Over 100 applicants
-          - Outlined Pills: [$82K/yr - $127K/yr]  [✓ Remote]  [✓ Full-time]
-          - Action Buttons: [ in Apply ]  [ Save ]
-          - Job match summary card: "Job match summary available: 94%"
-          - "About the job": rich narrative with Career Gap / process advice
-      ═══════════════════════════════════════════════════════════════════ */}
+        {/* ── BOTTOM PAGINATION SECTION ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#F1F5F9]">
+          {/* Circular Pagination Controls */}
+          <div className="flex items-center gap-2">
+            {/* Arrow Left */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] flex items-center justify-center transition cursor-pointer shadow-xs"
+              title="Previous page"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Page 1 (Active Blue) */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full bg-[#1E70F9] text-white text-xs font-bold flex items-center justify-center shadow-xs cursor-pointer"
+            >
+              1
+            </button>
+
+            {/* Page 2 */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
+            >
+              2
+            </button>
+
+            {/* Page 3 */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
+            >
+              3
+            </button>
+
+            {/* Ellipsis */}
+            <span className="text-xs text-[#94A3B8] px-1 font-medium select-none">
+              ...
+            </span>
+
+            {/* Page 10 */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
+            >
+              10
+            </button>
+
+            {/* Arrow Right */}
+            <button
+              type="button"
+              className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] flex items-center justify-center transition cursor-pointer shadow-xs"
+              title="Next page"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {/* Showing Count Text */}
+          <div className="text-xs font-medium text-[#64748B]">
+            Showing 1–3 of 28 companies
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── JOB DETAIL MODAL (PRESERVED FUNCTIONALITY) ── */}
       {selectedJob && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-[28px] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#E8E2D9] p-6 sm:p-8 relative">
+          <div className="bg-white rounded-[28px] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#E2E8F0] p-6 sm:p-8 relative">
             
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setSelectedJob(null)}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F4EFEA] hover:bg-[#EAE5DE] flex items-center justify-center text-[#141413] transition cursor-pointer z-10"
+              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F1F5F9] hover:bg-[#E2E8F0] flex items-center justify-center text-[#1E293B] transition cursor-pointer z-10"
             >
               <X className="w-4 h-4" />
             </button>
 
-            {/* Top Right Ranking Info (Image 4 match: How promoted jobs are ranked ⍰) */}
+            {/* Top Info */}
             <div className="flex items-center justify-between mb-4 pr-10">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#0091FF] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#1E70F9] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                   {selectedJob.company.name.slice(0, 2).toUpperCase()}
                 </div>
-                <span className="text-xs font-bold text-[#1E293B]">
+                <span className="text-xs font-bold text-[#0F172A]">
                   {selectedJob.company.name}
                 </span>
               </div>
 
-              <div className="text-[11px] text-[#64748B] hover:text-[#1E293B] flex items-center gap-1 cursor-pointer">
+              <div className="text-[11px] text-[#64748B] hover:text-[#0F172A] flex items-center gap-1 cursor-pointer">
                 <span>How promoted jobs are ranked</span>
                 <HelpCircle className="w-3 h-3" />
               </div>
             </div>
 
-            {/* Huge Job Title (Image 4 match) */}
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#141413] tracking-tight leading-tight mb-2">
+            {/* Job Title */}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-tight mb-2">
               {selectedJob.job.title}
             </h1>
 
-            {/* Sub-meta lines (Image 4 match) */}
+            {/* Sub-meta */}
             <div className="text-xs text-[#64748B] space-y-0.5 mb-4">
               <p>
                 {selectedJob.job.location} • {selectedJob.job.posted_days_ago} days ago • Over {selectedJob.job.applicants_count} applicants
@@ -496,7 +610,7 @@ export const CompanyDirectoryView: React.FC = () => {
               </p>
             </div>
 
-            {/* Outlined Pill Badges (Image 4 match: Salary, Remote, Full-time) */}
+            {/* Outlined Pill Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-5">
               <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs">
                 {selectedJob.job.salary}
@@ -504,17 +618,17 @@ export const CompanyDirectoryView: React.FC = () => {
 
               {selectedJob.job.is_remote && (
                 <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-[#0091FF]" /> Remote
+                  <Check className="w-3.5 h-3.5 text-[#1E70F9]" /> Remote
                 </span>
               )}
 
               <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs flex items-center gap-1">
-                <Check className="w-3.5 h-3.5 text-[#0091FF]" /> {selectedJob.job.job_type}
+                <Check className="w-3.5 h-3.5 text-[#1E70F9]" /> {selectedJob.job.job_type}
               </span>
             </div>
 
-            {/* Action Buttons Row (Image 4 match: [ in Apply ] and [ Save ]) */}
-            <div className="flex items-center gap-3 mb-7 pb-6 border-b border-[#F1F5F9]">
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 mb-7 pb-6 border-t border-b border-[#F1F5F9] pt-6">
               <button
                 type="button"
                 disabled={appliedJobs[selectedJob.job.id]}
@@ -522,7 +636,7 @@ export const CompanyDirectoryView: React.FC = () => {
                 className={`rounded-full px-7 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-2 cursor-pointer ${
                   appliedJobs[selectedJob.job.id]
                     ? 'bg-emerald-600 text-white cursor-default'
-                    : 'bg-[#0091FF] hover:bg-blue-600 text-white'
+                    : 'bg-[#1E70F9] hover:bg-[#155FD0] text-white'
                 }`}
               >
                 {appliedJobs[selectedJob.job.id] ? (
@@ -543,7 +657,7 @@ export const CompanyDirectoryView: React.FC = () => {
                 onClick={() => toggleSaveJob(selectedJob.job.id)}
                 className={`rounded-full border px-6 py-2.5 text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-1.5 ${
                   savedJobs[selectedJob.job.id]
-                    ? 'border-[#0091FF] bg-sky-50 text-[#0091FF]'
+                    ? 'border-[#1E70F9] bg-blue-50 text-[#1E70F9]'
                     : 'border-[#CBD5E1] hover:bg-slate-50 text-[#1E293B]'
                 }`}
               >
@@ -552,11 +666,11 @@ export const CompanyDirectoryView: React.FC = () => {
               </button>
             </div>
 
-            {/* ── JOB MATCH SUMMARY CARD (IMAGE 4 MATCH) ── */}
+            {/* Job Match Summary Card */}
             <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:p-5 mb-7 flex items-center justify-between gap-4">
               <div>
                 <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-0.5 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#0091FF]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#1E70F9]" />
                   Candidate match summary: {selectedJob.job.match_score}%
                 </h3>
                 <p className="text-[11px] sm:text-xs text-[#64748B]">
@@ -564,21 +678,20 @@ export const CompanyDirectoryView: React.FC = () => {
                 </p>
               </div>
 
-              {/* Progress Slider Pill Graphic (Image 4 match) */}
               <div className="shrink-0 flex items-center gap-1">
                 <div className="w-16 h-3 bg-[#E2E8F0] rounded-full overflow-hidden relative">
                   <div
-                    className="h-full bg-[#0091FF] rounded-full"
+                    className="h-full bg-[#1E70F9] rounded-full"
                     style={{ width: `${selectedJob.job.match_score}%` }}
                   />
                 </div>
-                <div className="w-4 h-4 rounded-full bg-[#0091FF] flex items-center justify-center text-white text-[9px] font-bold">
+                <div className="w-4 h-4 rounded-full bg-[#1E70F9] flex items-center justify-center text-white text-[9px] font-bold">
                   ✓
                 </div>
               </div>
             </div>
 
-            {/* ── ABOUT THE JOB SECTION (IMAGE 4 MATCH) ── */}
+            {/* About Job & Responsibilities */}
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-bold text-[#1E293B] mb-3">
@@ -589,7 +702,6 @@ export const CompanyDirectoryView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Key Responsibilities */}
               <div>
                 <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-2.5">
                   Key Responsibilities
@@ -597,14 +709,13 @@ export const CompanyDirectoryView: React.FC = () => {
                 <ul className="space-y-2 text-xs sm:text-sm text-[#475569]">
                   {selectedJob.job.responsibilities.map((resp, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#0091FF] font-bold">•</span>
+                      <span className="text-[#1E70F9] font-bold">•</span>
                       <span>{resp}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Requirements & Qualifications */}
               <div>
                 <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-2.5">
                   Qualifications & Skills
@@ -612,14 +723,13 @@ export const CompanyDirectoryView: React.FC = () => {
                 <ul className="space-y-2 text-xs sm:text-sm text-[#475569]">
                   {selectedJob.job.qualifications.map((qual, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#0091FF] font-bold">•</span>
+                      <span className="text-[#1E70F9] font-bold">•</span>
                       <span>{qual}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Other roles at this company */}
               {selectedJob.company.roles.length > 1 && (
                 <div className="pt-6 border-t border-[#F1F5F9]">
                   <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-3">
@@ -632,7 +742,7 @@ export const CompanyDirectoryView: React.FC = () => {
                         <div
                           key={otherRole.id}
                           onClick={() => setSelectedJob({ company: selectedJob.company, job: otherRole })}
-                          className="p-3.5 rounded-xl border border-[#E2E8F0] hover:border-[#0091FF] transition cursor-pointer flex items-center justify-between bg-white"
+                          className="p-3.5 rounded-xl border border-[#E2E8F0] hover:border-[#1E70F9] transition cursor-pointer flex items-center justify-between bg-white"
                         >
                           <div>
                             <span className="text-xs font-bold text-[#1E293B] block">

@@ -143,11 +143,11 @@ export function App() {
     return <LoginView onLoginSuccess={handleLoginSuccess} />;
   }
 
-  const isCandidateProfile = currentUser?.role === 'candidate' && activeTab === 'profile';
+  const isCandidateBlue = currentUser?.role === 'candidate' && (activeTab === 'profile' || activeTab === 'explore');
 
-  // ── AUTHENTICATED SYSTEM (Claude Warm Stone Aesthetic / Solid Blue Resume Onboarding) ──
+  // ── AUTHENTICATED SYSTEM (Claude Warm Stone Aesthetic / Solid Blue SaaS Dashboard) ──
   return (
-    <div className={`min-h-screen ${isCandidateProfile ? 'bg-[#1E70F9]' : 'bg-[#FAF7F2]'} font-sans antialiased text-[#141413] flex flex-col selection:bg-[#1E70F9] selection:text-white`}>
+    <div className={`min-h-screen ${isCandidateBlue ? 'bg-[#1E70F9]' : 'bg-[#FAF7F2]'} font-sans antialiased text-[#141413] flex flex-col selection:bg-[#1E70F9] selection:text-white`}>
       
       {/* ── TOP NAVBAR (Profile, Companies, Search, Pipeline pills) ── */}
       <AppNavbar
