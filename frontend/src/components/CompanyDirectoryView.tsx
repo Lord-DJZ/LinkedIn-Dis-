@@ -7,12 +7,18 @@ import {
   X,
   Check,
   Sparkles,
-  HelpCircle,
   Bookmark,
   ChevronRight,
   Search,
   ArrowLeft,
   ArrowRight,
+  ShieldCheck,
+  ThumbsUp,
+  ThumbsDown,
+  Globe,
+  MapPin,
+  Calendar,
+  Users,
 } from 'lucide-react';
 
 interface JobRole {
@@ -22,23 +28,27 @@ interface JobRole {
   salary: string;
   is_remote: boolean;
   job_type: string;
+  posted_time: string;
   posted_days_ago: number;
   applicants_count: number;
   match_score: number;
   match_count: string;
+  matched_skills: string[];
   description: string;
+  why_join_us: string[];
   responsibilities: string[];
   qualifications: string[];
+  benefits: string[];
 }
 
 interface CompanyItem {
   id: string;
   name: string;
-  industry?: string;
-  location?: string;
-  website?: string;
-  tech_stack?: string[];
-  description?: string;
+  industry: string;
+  location: string;
+  website: string;
+  tech_stack: string[];
+  description: string;
   engineers_count: string;
   founded_year: string;
   image_url: string;
@@ -53,10 +63,12 @@ export const CompanyDirectoryView: React.FC = () => {
   const [submittedOrgs, setSubmittedOrgs] = useState<Record<string, boolean>>({});
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Selected job for Job Description View Modal
+  // Selected job for Job Description View Modal (Jobright Inspiration Match)
   const [selectedJob, setSelectedJob] = useState<{ company: CompanyItem; job: JobRole } | null>(null);
   const [savedJobs, setSavedJobs] = useState<Record<string, boolean>>({});
   const [appliedJobs, setAppliedJobs] = useState<Record<string, boolean>>({});
+  const [showMatchDetails, setShowMatchDetails] = useState(false);
+  const [feedbackGiven, setFeedbackGiven] = useState<'helpful' | 'not_helpful' | null>(null);
 
   useEffect(() => {
     loadCompanies();
@@ -82,17 +94,24 @@ export const CompanyDirectoryView: React.FC = () => {
           roles: [
             {
               id: 'job-synth-1',
-              title: 'Junior data analyst/data scientist/ML/AI engineer',
-              location: 'Arlington, VA',
+              title: 'Junior Data Analyst / Data Scientist / ML AI Engineer',
+              location: 'San Francisco, CA (or Remote)',
               salary: '$82K/yr - $127K/yr',
               is_remote: true,
               job_type: 'Full-time',
+              posted_time: '2 hours ago',
               posted_days_ago: 3,
               applicants_count: 104,
               match_score: 94,
               match_count: '5 of 6 core skills matched',
+              matched_skills: ['Python', 'SQL', 'Machine Learning', 'Data Pipelines', 'Model Evaluation'],
               description:
-                'Career Gap? Outdated Tech stack? No Interviews? Let’s Get you Hired with a Process.\n\nMany job seekers assume their skills have expired simply because they’ve been out of the workforce or recently laid off. But the truth is, your foundation is still valuable — it just needs sharpening. Despite layoffs and market shifts, the tech industry still needs skilled developers. The challenge is proving you’re ready to contribute. Rejections can be discouraging, but they don’t reflect your true potential — they reflect your preparation.',
+                'Synthetix Neural Labs is building autonomous AI agent runtimes that transform how enterprise engineering teams deploy and optimize deep neural models. As an AI Engineer, Entry Level / Junior Data Analyst, you will contribute directly to the development, evaluation, and deployment of neural features used by production engineering teams.',
+              why_join_us: [
+                'Build real, production AI agents used by Fortune 500 enterprises.',
+                'High ownership culture with direct mentorship from founding research scientists.',
+                'Work with multi-node GPU clusters and modern open-weights foundation models.',
+              ],
               responsibilities: [
                 'Analyze multidimensional data pipelines and extract structured behavioral insights for production models.',
                 'Collaborate with senior ML research engineers to evaluate neural inference latency and accuracy.',
@@ -100,10 +119,17 @@ export const CompanyDirectoryView: React.FC = () => {
                 'Document engineering findings and present analytics telemetry directly to leadership.',
               ],
               qualifications: [
-                'Proficiency in Python, SQL, and pandas/NumPy for statistical analysis.',
-                'Understanding of machine learning concepts, evaluation metrics, and supervised learning.',
+                'Proficiency in Python, SQL, and pandas/NumPy for statistical data analysis.',
+                'Solid grasp of supervised machine learning concepts and model evaluation metrics.',
                 'Familiarity with containerized environments (Docker) and version control (Git).',
-                'Strong problem-solving discipline and eagerness to learn modern LLM orchestration.',
+                'Strong problem-solving discipline and eagerness to master modern LLM orchestration.',
+              ],
+              benefits: [
+                'Comprehensive medical, dental, and vision health coverage (100% employer paid).',
+                '$3,500 annual continuous learning, books, and technical conference stipend.',
+                'Flexible remote workstation equipment allowance with top-tier hardware.',
+                '401(k) retirement plan with 5% immediate company matching.',
+                'Generous paid time off (PTO) and flexible working hours.',
               ],
             },
             {
@@ -113,12 +139,19 @@ export const CompanyDirectoryView: React.FC = () => {
               salary: '$190K/yr - $260K/yr',
               is_remote: true,
               job_type: 'Full-time',
+              posted_time: '5 hours ago',
               posted_days_ago: 5,
               applicants_count: 42,
               match_score: 88,
               match_count: '4 of 5 core skills matched',
+              matched_skills: ['PyTorch', 'Distributed Training', 'CUDA', 'Transformer Architecture'],
               description:
-                'Lead our core multimodal foundation model initiative. You will spearhead architectural innovations in sparse attention and continuous test-time compute.',
+                'Lead our core multimodal foundation model initiative. You will spearhead architectural innovations in sparse attention and continuous test-time compute across multi-node clusters.',
+              why_join_us: [
+                'Directly shape foundational neural model architectures with massive compute allocations.',
+                'Publish novel findings in top-tier machine learning conferences (NeurIPS, ICML, ICLR).',
+                'Competitive founding-tier equity package and significant strategic autonomy.',
+              ],
               responsibilities: [
                 'Train and fine-tune large-scale multimodal models across multi-node GPU clusters.',
                 'Publish novel findings in top-tier conferences and translate research into production microservices.',
@@ -128,6 +161,12 @@ export const CompanyDirectoryView: React.FC = () => {
                 'Ph.D. or equivalent industry track record in Machine Learning or Computer Science.',
                 'Deep mastery of PyTorch, Triton, CUDA optimization, and distributed training.',
                 'Proven publications or open-source releases in generative AI or computer vision.',
+              ],
+              benefits: [
+                'Top-tier executive health benefits, dental, and vision for you and dependents.',
+                'Uncapped computational compute budget on dedicated H100/H200 GPU clusters.',
+                'Comprehensive 401(k) matching and annual performance equity refreshers.',
+                'Unlimited paid time off and quarterly wellness sabbaticals.',
               ],
             },
           ],
@@ -153,12 +192,19 @@ export const CompanyDirectoryView: React.FC = () => {
               salary: '$185K/yr - $240K/yr',
               is_remote: true,
               job_type: 'Full-time',
+              posted_time: '1 day ago',
               posted_days_ago: 2,
               applicants_count: 58,
               match_score: 96,
               match_count: '6 of 6 core skills matched',
+              matched_skills: ['FastAPI', 'Kubernetes', 'Distributed Systems', 'Python', 'Docker', 'PostgreSQL'],
               description:
                 'Architect the next evolution of our global real-time inference mesh. You will design fault-tolerant microservices and low-latency API gateways across multi-region deployments.',
+              why_join_us: [
+                'Architect cloud systems processing billions of daily transactions for global enterprises.',
+                'Modern zero-legacy microservices stack with continuous automated deployment.',
+                'Lucrative base salary, equity incentives, and comprehensive family benefits.',
+              ],
               responsibilities: [
                 'Design high-throughput, sub-10ms distributed serving architecture for LLM reasoning engines.',
                 'Partner with product teams to translate enterprise SLAs into robust infrastructure blueprints.',
@@ -169,6 +215,12 @@ export const CompanyDirectoryView: React.FC = () => {
                 'Experience scaling mission-critical platforms handling millions of queries per minute.',
                 'Strong background in cloud networking, Terraform, and automated deployment topologies.',
               ],
+              benefits: [
+                'Platinum healthcare coverage with zero in-network deductible.',
+                'Generous employee equity participation plan with quarterly liquidity windows.',
+                'Annual remote home office refresh stipend and cellular reimbursement.',
+                'Comprehensive family leave and backup childcare benefits.',
+              ],
             },
             {
               id: 'job-apex-2',
@@ -177,12 +229,19 @@ export const CompanyDirectoryView: React.FC = () => {
               salary: '$150K/yr - $195K/yr',
               is_remote: true,
               job_type: 'Full-time',
+              posted_time: '2 days ago',
               posted_days_ago: 4,
               applicants_count: 73,
               match_score: 91,
               match_count: '5 of 6 core skills matched',
+              matched_skills: ['React', 'TypeScript', 'Tailwind CSS', 'FastAPI', 'Redis'],
               description:
                 'Bridge intuitive user experiences with high-performance generative models. You will craft reactive web applications and real-time streaming interfaces.',
+              why_join_us: [
+                'Craft state-of-the-art interactive AI products with immediate user adoption.',
+                'Full technical latitude on frontend frameworks, animations, and design tokens.',
+                'Work alongside world-class designers and backend distributed systems architects.',
+              ],
               responsibilities: [
                 'Develop highly reactive web interfaces with React, TypeScript, and Tailwind CSS.',
                 'Implement robust streaming WebSocket backends using Python FastAPI and Redis.',
@@ -191,7 +250,13 @@ export const CompanyDirectoryView: React.FC = () => {
               qualifications: [
                 '5+ years building full-stack applications with modern web stacks.',
                 'Experience with streaming LLM completions, agent memory systems, and vector search.',
-                'Eye for clean UI craft and fluid micro-interactions.',
+                'Eye for clean UI craft, typography, and fluid micro-interactions.',
+              ],
+              benefits: [
+                'Full medical, dental, and optical insurance coverage with HSA contribution.',
+                'Flexible working hours across all US time zones.',
+                '$2,500 personal development and continuing education fund.',
+                'Paid team offsites twice a year in scenic locations.',
               ],
             },
           ],
@@ -217,12 +282,19 @@ export const CompanyDirectoryView: React.FC = () => {
               salary: '$135K/yr - $175K/yr',
               is_remote: true,
               job_type: 'Full-time',
+              posted_time: '3 hours ago',
               posted_days_ago: 6,
               applicants_count: 29,
               match_score: 85,
               match_count: '4 of 5 core skills matched',
+              matched_skills: ['Bioinformatics', 'Python', 'Nextflow', 'Cloud Computing (AWS/GCP)'],
               description:
                 'Build and orchestrate clinical-grade genomic data processing pipelines. You will optimize variant calling tools and integrate electronic health records safely.',
+              why_join_us: [
+                'Apply your engineering skills directly to life-saving clinical healthcare applications.',
+                'Collaborate directly with renowned geneticists, computational biologists, and oncologists.',
+                'Modern cloud native infrastructure handling millions of genome sequence variants.',
+              ],
               responsibilities: [
                 'Design scalable Nextflow/Snakemake workflows for high-throughput sequencing data.',
                 'Ensure HIPAA and SOC2 compliance across all cloud storage buckets and analytical pipelines.',
@@ -231,6 +303,13 @@ export const CompanyDirectoryView: React.FC = () => {
               qualifications: [
                 'Experience in computational biology, bioinformatics, or health data infrastructure.',
                 'Proficiency in Python, Bash scripting, and cloud computing (AWS/GCP).',
+                'Working understanding of variant calling algorithms and clinical data security.',
+              ],
+              benefits: [
+                'Premier healthcare, vision, and dental plans with minimal copayments.',
+                'Flexible hybrid or 100% remote working options.',
+                'Tuition reimbursement program and conference sponsorships.',
+                'Generous PTO, family sick leave, and matching charitable contributions.',
               ],
             },
           ],
@@ -322,16 +401,13 @@ export const CompanyDirectoryView: React.FC = () => {
 
           {/* Right: Hero Graphic & Slogan (Abstract shape + Cursive "Find your next opportunity" + Blue Icon + Slogan) */}
           <div className="relative shrink-0 flex items-center justify-end">
-            {/* Pale Blue Organic Blob Background Shape */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[340px] h-[220px] bg-[#F0F6FF] rounded-full blur-2xl -z-10 pointer-events-none opacity-80" />
             
             <div className="relative flex items-center gap-6 pr-2 sm:pr-4">
-              {/* Handwritten / Cursive callout with curved arrow */}
               <div className="hidden sm:flex flex-col items-end text-right">
                 <span className="text-[#3B82F6] text-sm font-medium italic font-serif leading-tight">
                   Find your<br />next opportunity
                 </span>
-                {/* Minimal SVG curved arrow pointing towards the building icon */}
                 <svg
                   className="w-8 h-6 text-[#3B82F6] mt-1 -rotate-6"
                   viewBox="0 0 40 30"
@@ -346,12 +422,10 @@ export const CompanyDirectoryView: React.FC = () => {
                 </svg>
               </div>
 
-              {/* Blue Circular Icon */}
               <div className="w-12 h-12 rounded-full bg-[#1E70F9] text-white flex items-center justify-center shadow-md shadow-[#1E70F9]/30 shrink-0">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
 
-              {/* Slogan Text */}
               <div className="max-w-[200px]">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#0F172A] leading-tight mb-1">
                   Great companies build great people
@@ -397,7 +471,6 @@ export const CompanyDirectoryView: React.FC = () => {
                 >
                   {/* TOP SECTION: COMPANY INFORMATION */}
                   <div className="p-7 sm:p-8 flex flex-col flex-1">
-                    {/* Small Label Tag & Three-dot Menu */}
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-[0.16em]">
                         ABOUT THE COMPANY
@@ -411,17 +484,14 @@ export const CompanyDirectoryView: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* Company Name */}
                     <h2 className="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight leading-snug mb-2">
                       {company.name}
                     </h2>
 
-                    {/* Short Description */}
                     <p className="text-xs sm:text-sm text-[#475569] leading-relaxed mb-6 font-normal">
                       {company.description}
                     </p>
 
-                    {/* Statistics Row: Engineers Count & Open Roles Count */}
                     <div className="flex items-center gap-12 sm:gap-14 mt-auto pt-2">
                       <div>
                         <div className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
@@ -445,30 +515,28 @@ export const CompanyDirectoryView: React.FC = () => {
 
                   {/* BOTTOM SECTION: LARGE BUILDING IMAGE WITH FLOATING BUTTONS & FOOTER */}
                   <div className="relative w-full h-[230px] sm:h-[250px] overflow-hidden rounded-t-[28px] rounded-b-[32px] mt-2">
-                    {/* Full Building Background Photo */}
                     <img
                       src={company.image_url}
                       alt={company.name}
                       className="w-full h-full object-cover"
                     />
 
-                    {/* Dark gradient overlay for text & button legibility */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
-                    {/* Floating Buttons & Footer Content */}
                     <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col gap-3.5 z-10">
-                      {/* Buttons Row */}
                       <div className="grid grid-cols-2 gap-3">
-                        {/* View Roles (White Button, Dark Text) */}
                         <button
                           type="button"
-                          onClick={() => setSelectedJob({ company, job: company.roles[0] })}
+                          onClick={() => {
+                            setSelectedJob({ company, job: company.roles[0] });
+                            setShowMatchDetails(false);
+                            setFeedbackGiven(null);
+                          }}
                           className="rounded-xl bg-white hover:bg-slate-100 active:scale-98 text-[#0F172A] text-xs sm:text-sm font-bold py-3 px-3 transition cursor-pointer text-center shadow-md border-0"
                         >
                           View Roles ({company.roles.length})
                         </button>
 
-                        {/* Submit Dossier (Blue Filled Button) */}
                         <button
                           type="button"
                           disabled={isSubmitting || hasSubmitted}
@@ -492,7 +560,6 @@ export const CompanyDirectoryView: React.FC = () => {
                         </button>
                       </div>
 
-                      {/* Footer inside image: Founded year on left, Location on right */}
                       <div className="flex items-center justify-between text-[11px] sm:text-xs text-white/95 font-medium px-1 drop-shadow-sm">
                         <span>Founded {company.founded_year}</span>
                         <span>{company.location}</span>
@@ -508,9 +575,7 @@ export const CompanyDirectoryView: React.FC = () => {
 
         {/* ── BOTTOM PAGINATION SECTION ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-[#F1F5F9]">
-          {/* Circular Pagination Controls */}
           <div className="flex items-center gap-2">
-            {/* Arrow Left */}
             <button
               type="button"
               className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] flex items-center justify-center transition cursor-pointer shadow-xs"
@@ -519,7 +584,6 @@ export const CompanyDirectoryView: React.FC = () => {
               <ArrowLeft className="w-3.5 h-3.5" />
             </button>
 
-            {/* Page 1 (Active Blue) */}
             <button
               type="button"
               className="w-8 h-8 rounded-full bg-[#1E70F9] text-white text-xs font-bold flex items-center justify-center shadow-xs cursor-pointer"
@@ -527,7 +591,6 @@ export const CompanyDirectoryView: React.FC = () => {
               1
             </button>
 
-            {/* Page 2 */}
             <button
               type="button"
               className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
@@ -535,7 +598,6 @@ export const CompanyDirectoryView: React.FC = () => {
               2
             </button>
 
-            {/* Page 3 */}
             <button
               type="button"
               className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
@@ -543,12 +605,10 @@ export const CompanyDirectoryView: React.FC = () => {
               3
             </button>
 
-            {/* Ellipsis */}
             <span className="text-xs text-[#94A3B8] px-1 font-medium select-none">
               ...
             </span>
 
-            {/* Page 10 */}
             <button
               type="button"
               className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] text-xs font-medium flex items-center justify-center transition cursor-pointer shadow-xs"
@@ -556,7 +616,6 @@ export const CompanyDirectoryView: React.FC = () => {
               10
             </button>
 
-            {/* Arrow Right */}
             <button
               type="button"
               className="w-8 h-8 rounded-full border border-[#E2E8F0] bg-white hover:bg-[#F8FAFC] text-[#64748B] flex items-center justify-center transition cursor-pointer shadow-xs"
@@ -566,7 +625,6 @@ export const CompanyDirectoryView: React.FC = () => {
             </button>
           </div>
 
-          {/* Showing Count Text */}
           <div className="text-xs font-medium text-[#64748B]">
             Showing 1–3 of 28 companies
           </div>
@@ -574,76 +632,111 @@ export const CompanyDirectoryView: React.FC = () => {
 
       </div>
 
-      {/* ── JOB DETAIL MODAL (PRESERVED FUNCTIONALITY) ── */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          JOB DETAILS PAGE / VIEW (EXACT 1:1 INSPIRATION IMAGE MATCH)
+          - White centered container, generous spacing, clean typography
+          - Company logo & name top row with options and close button
+          - Large bold Job Title with verification badge
+          - Metadata: Location • Posted time • Applicant information
+          - Small rounded tags/pills: [✓ Remote]  [✓ Full-time]  [$82K - $127K]
+          - Action buttons: [ Apply with Dossier ]  [ Save ]
+          - AI Match Highlight Card: "Your profile and resume match the required qualifications well"
+            with overlapping avatars, "✦ Show match details", progress breakdown, and feedback
+          - Clean content sections:
+            - About the Job & Why Join Us
+            - Key Responsibilities
+            - Required Skills & Qualifications
+            - Featured Benefits
+            - Company Information card
+      ═══════════════════════════════════════════════════════════════════ */}
       {selectedJob && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn">
-          <div className="bg-white rounded-[28px] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-[#E2E8F0] p-6 sm:p-8 relative">
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fadeIn"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedJob(null);
+          }}
+        >
+          <div className="bg-white rounded-[24px] sm:rounded-[32px] max-w-2xl sm:max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border border-[#E5E7EB] p-6 sm:p-10 relative text-[#111827] font-sans">
             
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setSelectedJob(null)}
-              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-[#F1F5F9] hover:bg-[#E2E8F0] flex items-center justify-center text-[#1E293B] transition cursor-pointer z-10"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Top Info */}
-            <div className="flex items-center justify-between mb-4 pr-10">
+            {/* ── TOP BAR: COMPANY LOGO / AVATAR + COMPANY NAME + ACTIONS ── */}
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-[#1E70F9] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                  {selectedJob.company.name.slice(0, 2).toUpperCase()}
+                {/* Company Logo Badge */}
+                <div className="w-8 h-8 rounded-full bg-[#10B981] text-white flex items-center justify-center font-bold text-xs shadow-2xs shrink-0">
+                  <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
                 </div>
-                <span className="text-xs font-bold text-[#0F172A]">
+                <span className="text-sm sm:text-base font-bold text-[#111827]">
                   {selectedJob.company.name}
                 </span>
               </div>
 
-              <div className="text-[11px] text-[#64748B] hover:text-[#0F172A] flex items-center gap-1 cursor-pointer">
-                <span>How promoted jobs are ranked</span>
-                <HelpCircle className="w-3 h-3" />
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  title="More options"
+                  className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-[#6B7280] transition cursor-pointer"
+                >
+                  <MoreHorizontal className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedJob(null)}
+                  title="Close job details"
+                  className="w-8 h-8 rounded-full bg-[#F3F4F6] hover:bg-[#E5E7EB] flex items-center justify-center text-[#4B5563] hover:text-[#111827] transition cursor-pointer ml-1"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
-            {/* Job Title */}
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight leading-tight mb-2">
-              {selectedJob.job.title}
-            </h1>
-
-            {/* Sub-meta */}
-            <div className="text-xs text-[#64748B] space-y-0.5 mb-4">
-              <p>
-                {selectedJob.job.location} • {selectedJob.job.posted_days_ago} days ago • Over {selectedJob.job.applicants_count} applicants
-              </p>
-              <p className="text-[11px] text-[#94A3B8]">
-                Promoted by hirer • Fast candidate screening in progress
-              </p>
+            {/* ── JOB TITLE WITH VERIFICATION BADGE ── */}
+            <div className="flex items-center gap-2 mt-2 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight leading-tight">
+                {selectedJob.job.title}
+              </h1>
+              <span title="Verified Employer Role" className="inline-flex items-center"><ShieldCheck className="w-5 h-5 text-[#6B7280] shrink-0" /></span>
             </div>
 
-            {/* Outlined Pill Badges */}
-            <div className="flex flex-wrap items-center gap-2 mb-5">
-              <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs">
-                {selectedJob.job.salary}
-              </span>
+            {/* ── METADATA LINE: LOCATION • POSTED TIME • APPLICANTS ── */}
+            <div className="text-xs sm:text-sm text-[#6B7280] flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-1">
+              <span>{selectedJob.job.location}</span>
+              <span>•</span>
+              <span className="text-[#059669] font-semibold">{selectedJob.job.posted_time}</span>
+              <span>•</span>
+              <span>{selectedJob.job.applicants_count} people clicked apply</span>
+            </div>
 
+            <div className="text-[11px] sm:text-xs text-[#9CA3AF] mb-4">
+              Promoted by hirer • Responses managed via Dullnit Verified Candidate Dossier
+            </div>
+
+            {/* ── SMALL ROUNDED TAGS / PILLS ── */}
+            <div className="flex flex-wrap items-center gap-2 mb-6">
               {selectedJob.job.is_remote && (
-                <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5 text-[#1E70F9]" /> Remote
+                <span className="rounded-full border border-[#D1D5DB] bg-white text-[#374151] text-xs font-semibold px-3.5 py-1 shadow-2xs flex items-center gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-[#374151] stroke-[2.5]" /> Remote
                 </span>
               )}
 
-              <span className="rounded-full border border-[#CBD5E1] bg-white text-[#1E293B] text-xs font-bold px-4 py-1 shadow-2xs flex items-center gap-1">
-                <Check className="w-3.5 h-3.5 text-[#1E70F9]" /> {selectedJob.job.job_type}
+              <span className="rounded-full border border-[#D1D5DB] bg-white text-[#374151] text-xs font-semibold px-3.5 py-1 shadow-2xs flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-[#374151] stroke-[2.5]" /> {selectedJob.job.job_type}
+              </span>
+
+              <span className="rounded-full border border-[#D1D5DB] bg-white text-[#374151] text-xs font-semibold px-3.5 py-1 shadow-2xs">
+                {selectedJob.job.salary}
               </span>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3 mb-7 pb-6 border-t border-b border-[#F1F5F9] pt-6">
+            {/* ── ACTION BUTTONS: PRIMARY APPLY & SECONDARY SAVE ── */}
+            <div className="flex items-center gap-3 mb-8">
+              {/* Primary: Apply with Dossier */}
               <button
                 type="button"
                 disabled={appliedJobs[selectedJob.job.id]}
                 onClick={() => handleApplyToJob(selectedJob.job, selectedJob.company)}
-                className={`rounded-full px-7 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-2 cursor-pointer ${
+                className={`rounded-full px-6 sm:px-7 py-2.5 text-sm font-bold shadow-xs transition flex items-center gap-2 cursor-pointer active:scale-98 ${
                   appliedJobs[selectedJob.job.id]
                     ? 'bg-emerald-600 text-white cursor-default'
                     : 'bg-[#1E70F9] hover:bg-[#155FD0] text-white'
@@ -651,7 +744,7 @@ export const CompanyDirectoryView: React.FC = () => {
               >
                 {appliedJobs[selectedJob.job.id] ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 stroke-[2.5]" />
                     <span>Dossier Applied</span>
                   </>
                 ) : (
@@ -662,13 +755,14 @@ export const CompanyDirectoryView: React.FC = () => {
                 )}
               </button>
 
+              {/* Secondary: Save (White background, blue outline) */}
               <button
                 type="button"
                 onClick={() => toggleSaveJob(selectedJob.job.id)}
-                className={`rounded-full border px-6 py-2.5 text-xs sm:text-sm font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                className={`rounded-full border px-6 sm:px-7 py-2.5 text-sm font-bold transition cursor-pointer flex items-center gap-1.5 active:scale-98 ${
                   savedJobs[selectedJob.job.id]
-                    ? 'border-[#1E70F9] bg-blue-50 text-[#1E70F9]'
-                    : 'border-[#CBD5E1] hover:bg-slate-50 text-[#1E293B]'
+                    ? 'border-[#1E70F9] bg-blue-50/80 text-[#1E70F9]'
+                    : 'border-[#1E70F9] bg-white hover:bg-blue-50/40 text-[#1E70F9]'
                 }`}
               >
                 <Bookmark className="w-3.5 h-3.5" />
@@ -676,73 +770,257 @@ export const CompanyDirectoryView: React.FC = () => {
               </button>
             </div>
 
-            {/* Job Match Summary Card */}
-            <div className="rounded-2xl border border-[#E2E8F0] bg-[#F8FAFC] p-4 sm:p-5 mb-7 flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-0.5 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#1E70F9]" />
-                  Candidate match summary: {selectedJob.job.match_score}%
+            {/* ── AI MATCH CARD (EXACT INSPIRATION IMAGE 2 REPRODUCTION) ── */}
+            <div className="rounded-2xl border border-[#E5E7EB] bg-white p-5 sm:p-6 mb-8 shadow-xs">
+              
+              {/* Top Row: Headline + Overlapping Avatars */}
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <h3 className="text-base sm:text-lg font-bold text-[#111827] leading-snug max-w-md">
+                  Your profile and resume <span className="text-[#059669]">match</span> the required qualifications well
                 </h3>
-                <p className="text-[11px] sm:text-xs text-[#64748B]">
-                  {selectedJob.job.match_count}. Your verified skills align with this engineering scope.
+
+                {/* Overlapping Avatars Graphic */}
+                <div className="relative shrink-0 flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-[#10B981] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-[#1F2937] text-white flex items-center justify-center font-bold text-xs border-2 border-white -ml-3 mt-3 shadow-xs overflow-hidden">
+                    <span>CA</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Show Match Details Button */}
+              <button
+                type="button"
+                onClick={() => setShowMatchDetails(!showMatchDetails)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs sm:text-sm font-semibold text-[#1F2937] shadow-xs cursor-pointer transition mb-4"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <span>{showMatchDetails ? 'Hide match details' : 'Show match details'}</span>
+              </button>
+
+              {/* Expandable Match Details Drawer */}
+              {showMatchDetails && (
+                <div className="rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] p-4 sm:p-5 mb-4 animate-fadeIn space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#1E293B]">
+                      Verified Skills Alignment ({selectedJob.job.match_score}%)
+                    </span>
+                    <span className="text-xs font-bold text-[#059669]">
+                      {selectedJob.job.match_count}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full h-2.5 bg-[#E2E8F0] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#059669] rounded-full transition-all duration-500"
+                      style={{ width: `${selectedJob.job.match_score}%` }}
+                    />
+                  </div>
+
+                  {/* Skills Pill Cloud */}
+                  <div className="pt-2">
+                    <span className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider block mb-2">
+                      Matching Qualifications in Your Dossier:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedJob.job.matched_skills.map((skill, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs font-medium flex items-center gap-1"
+                        >
+                          <Check className="w-3 h-3 text-[#059669]" /> {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Bottom Beta Feedback Bar */}
+              <div className="flex items-center justify-between pt-3 border-t border-[#F3F4F6] text-xs text-[#9CA3AF]">
+                <span>BETA • Is this information helpful?</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackGiven('helpful')}
+                    className={`p-1 rounded hover:bg-slate-100 transition cursor-pointer ${
+                      feedbackGiven === 'helpful' ? 'text-[#059669] font-bold' : 'text-[#6B7280]'
+                    }`}
+                    title="Yes, helpful"
+                  >
+                    <ThumbsUp className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackGiven('not_helpful')}
+                    className={`p-1 rounded hover:bg-slate-100 transition cursor-pointer ${
+                      feedbackGiven === 'not_helpful' ? 'text-red-500 font-bold' : 'text-[#6B7280]'
+                    }`}
+                    title="Not helpful"
+                  >
+                    <ThumbsDown className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            {/* ── SECTION 1: ABOUT THE JOB ── */}
+            <div className="space-y-6 text-[#374151] text-sm sm:text-[15px] leading-relaxed">
+              <div>
+                <h2 className="text-xl font-bold text-[#111827] mb-3">
+                  About the job
+                </h2>
+                <p className="whitespace-pre-line text-[#4B5563]">
+                  {selectedJob.job.description}
                 </p>
               </div>
 
-              <div className="shrink-0 flex items-center gap-1">
-                <div className="w-16 h-3 bg-[#E2E8F0] rounded-full overflow-hidden relative">
-                  <div
-                    className="h-full bg-[#1E70F9] rounded-full"
-                    style={{ width: `${selectedJob.job.match_score}%` }}
-                  />
+              {/* Why Join Us */}
+              {selectedJob.job.why_join_us && selectedJob.job.why_join_us.length > 0 && (
+                <div>
+                  <h3 className="text-base font-bold text-[#111827] mb-2.5">
+                    Why Join Us
+                  </h3>
+                  <ul className="space-y-2">
+                    {selectedJob.job.why_join_us.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 text-[#4B5563]">
+                        <span className="text-[#111827] font-bold select-none">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="w-4 h-4 rounded-full bg-[#1E70F9] flex items-center justify-center text-white text-[9px] font-bold">
-                  ✓
-                </div>
-              </div>
-            </div>
+              )}
 
-            {/* About Job & Responsibilities */}
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-bold text-[#1E293B] mb-3">
-                  About the job
-                </h2>
-                <div className="text-xs sm:text-sm text-[#475569] leading-relaxed whitespace-pre-line">
-                  {selectedJob.job.description}
-                </div>
-              </div>
+              <hr className="border-[#F3F4F6] my-6" />
 
+              {/* ── SECTION 2: KEY RESPONSIBILITIES ── */}
               <div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-2.5">
+                <h2 className="text-xl font-bold text-[#111827] mb-3">
                   Key Responsibilities
-                </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-[#475569]">
-                  {selectedJob.job.responsibilities.map((resp, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#1E70F9] font-bold">•</span>
+                </h2>
+                <ul className="space-y-2.5">
+                  {selectedJob.job.responsibilities.map((resp, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-[#4B5563]">
+                      <span className="text-[#111827] font-bold select-none">•</span>
                       <span>{resp}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
+              <hr className="border-[#F3F4F6] my-6" />
+
+              {/* ── SECTION 3: REQUIRED SKILLS & QUALIFICATIONS ── */}
               <div>
-                <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-2.5">
-                  Qualifications & Skills
-                </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-[#475569]">
-                  {selectedJob.job.qualifications.map((qual, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-[#1E70F9] font-bold">•</span>
+                <h2 className="text-xl font-bold text-[#111827] mb-3">
+                  Required Skills & Qualifications
+                </h2>
+                <ul className="space-y-2.5">
+                  {selectedJob.job.qualifications.map((qual, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-[#4B5563]">
+                      <span className="text-[#111827] font-bold select-none">•</span>
                       <span>{qual}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
+              <hr className="border-[#F3F4F6] my-6" />
+
+              {/* ── SECTION 4: FEATURED BENEFITS ── */}
+              <div>
+                <h2 className="text-xl font-bold text-[#111827] mb-3">
+                  Featured Benefits
+                </h2>
+                <ul className="space-y-2.5">
+                  {selectedJob.job.benefits.map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-[#4B5563]">
+                      <span className="text-[#059669] font-bold select-none">✓</span>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <hr className="border-[#F3F4F6] my-6" />
+
+              {/* ── SECTION 5: COMPANY INFORMATION ── */}
+              <div>
+                <h2 className="text-xl font-bold text-[#111827] mb-4">
+                  Company Information
+                </h2>
+                <div className="rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-5 sm:p-6 space-y-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-[#111827]">
+                        {selectedJob.company.name}
+                      </h3>
+                      <p className="text-xs text-[#6B7280] mt-0.5">
+                        {selectedJob.company.industry}
+                      </p>
+                    </div>
+
+                    <a
+                      href={selectedJob.company.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#1E70F9] hover:underline"
+                    >
+                      <span>Visit website</span>
+                      <Globe className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+                    {selectedJob.company.description}
+                  </p>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-[#E5E7EB] text-xs">
+                    <div className="flex items-center gap-2 text-[#4B5563]">
+                      <Users className="w-4 h-4 text-[#6B7280]" />
+                      <span>{selectedJob.company.engineers_count} Engineers</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-[#4B5563]">
+                      <Calendar className="w-4 h-4 text-[#6B7280]" />
+                      <span>Founded {selectedJob.company.founded_year}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-[#4B5563]">
+                      <MapPin className="w-4 h-4 text-[#6B7280]" />
+                      <span>{selectedJob.company.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <span className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-wider block mb-2">
+                      Primary Engineering Stack:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedJob.company.tech_stack.map((tech, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-0.5 rounded-lg bg-white border border-[#E5E7EB] text-[#374151] text-xs font-medium"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Other Roles at this company */}
               {selectedJob.company.roles.length > 1 && (
-                <div className="pt-6 border-t border-[#F1F5F9]">
-                  <h3 className="text-xs sm:text-sm font-bold text-[#1E293B] mb-3">
+                <div className="pt-4">
+                  <h3 className="text-base font-bold text-[#111827] mb-3">
                     Other positions at {selectedJob.company.name}
                   </h3>
                   <div className="space-y-2">
@@ -751,23 +1029,28 @@ export const CompanyDirectoryView: React.FC = () => {
                       .map((otherRole) => (
                         <div
                           key={otherRole.id}
-                          onClick={() => setSelectedJob({ company: selectedJob.company, job: otherRole })}
-                          className="p-3.5 rounded-xl border border-[#E2E8F0] hover:border-[#1E70F9] transition cursor-pointer flex items-center justify-between bg-white"
+                          onClick={() => {
+                            setSelectedJob({ company: selectedJob.company, job: otherRole });
+                            setShowMatchDetails(false);
+                            setFeedbackGiven(null);
+                          }}
+                          className="p-3.5 rounded-xl border border-[#E5E7EB] hover:border-[#1E70F9] transition cursor-pointer flex items-center justify-between bg-white shadow-2xs hover:shadow-xs"
                         >
                           <div>
-                            <span className="text-xs font-bold text-[#1E293B] block">
+                            <span className="text-xs sm:text-sm font-bold text-[#111827] block">
                               {otherRole.title}
                             </span>
-                            <span className="text-[11px] text-[#64748B]">
+                            <span className="text-[11px] text-[#6B7280]">
                               {otherRole.location} • {otherRole.salary}
                             </span>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-[#94A3B8]" />
+                          <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />
                         </div>
                       ))}
                   </div>
                 </div>
               )}
+
             </div>
 
           </div>
