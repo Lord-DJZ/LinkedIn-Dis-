@@ -18,8 +18,8 @@ class LocalFileStorage(FileStorage):
     def save_file(self, file_obj: BinaryIO, original_filename: str) -> Tuple[str, str, int, str]:
         # Extract and validate extension
         ext = Path(original_filename).suffix.lower()
-        if ext not in [".pdf", ".docx"]:
-            raise FileValidationException(f"Unsupported file extension '{ext}'. Only .pdf and .docx are permitted.")
+        if ext not in [".pdf", ".docx", ".doc"]:
+            raise FileValidationException(f"Unsupported file extension '{ext}'. Only .pdf, .docx, and .doc are permitted.")
 
         # Generate non-guessable, secure unique filename
         secure_filename = f"{uuid.uuid4()}{ext}"

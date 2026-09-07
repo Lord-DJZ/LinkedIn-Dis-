@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
 
 :root {
   /* Canvas & Surfaces */
@@ -49,29 +50,19 @@
   --radius-full: 9999px;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-canvas);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.08) 0px, transparent 45%),
-    radial-gradient(at 100% 0%, rgba(79, 70, 229, 0.06) 0px, transparent 45%),
-    radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
-  background-attachment: fixed;
-  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
+  background: #f5f7f4;
+  color: #171917;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 
 h1, h2, h3, h4, h5, .font-heading {
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
-  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  color: inherit;
 }
 
 /* Layout Utilities */
@@ -616,5 +607,162 @@ h1, h2, h3, h4, h5, .font-heading {
   }
   .persona-right-content {
     padding: 28px 20px;
+  }
+}
+
+/* ── Apple-Grade Design Polish & Glassmorphism ── */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.apple-glass-dark {
+  background: rgba(20, 20, 22, 0.65);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.apple-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-card:hover {
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+}
+
+.apple-input {
+  background: #f4f5f7;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #111827;
+  transition: all 0.2s ease;
+}
+
+.apple-input:focus {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+  outline: none;
+}
+
+.apple-pill-btn {
+  border-radius: 9999px;
+  background: #000000;
+  color: #ffffff;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.apple-pill-btn:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.apple-pill-btn:active {
+  transform: translateY(0);
+}
+
+/* Smooth Slide Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Dullnit product surfaces */
+button,
+a,
+label[for] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #6d8f72;
+  outline-offset: 2px;
+}
+
+.auth-input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: #f3f5f2;
+  padding: 0 16px;
+  font-size: 13px;
+  color: #171917;
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.auth-input::placeholder {
+  color: #939a94;
+}
+
+.auth-input:hover {
+  background: #eff2ee;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: rgba(61, 84, 64, 0.25);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(85, 118, 90, 0.08);
+}
+
+.demo-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(17, 19, 17, 0.08);
+  border-radius: 12px;
+  background: #fff;
+  color: #505851;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.demo-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17, 19, 17, 0.15);
+  background: #f6f8f5;
+}
+
+.demo-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+::selection {
+  background: #1b211c;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .auth-input {
+    height: 50px;
   }
 }

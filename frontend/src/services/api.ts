@@ -73,6 +73,66 @@ class ApiService {
     return this.request<User>('/auth/me');
   }
 
+  async ensureCandidateAuth(): Promise<string> {
+    const existing = this.getToken();
+    if (existing) {
+      try {
+        const me = await this.getMe();
+        if (me.role === 'candidate') {
+          return existing;
+        }
+      } catch {
+        this.clearToken();
+      }
+    }
+    // Auto login demo candidate or register
+    try {
+      const res = await this.login({
+        email: 'demuni.test@dullnit.com',
+        password: 'CandidatePassword123!',
+      });
+      return res.access_token;
+    } catch {
+      const reg = await this.register({
+        email: 'demuni.test@dullnit.com',
+        password: 'CandidatePassword123!',
+        role: 'candidate',
+        full_name: 'Demuni Jayasmith',
+      });
+      return reg.access_token;
+    }
+  }
+
+  async ensureRecruiterAuth(): Promise<string> {
+    const existing = this.getToken();
+    if (existing) {
+      try {
+        const me = await this.getMe();
+        if (me.role === 'recruiter') {
+          return existing;
+        }
+      } catch {
+        this.clearToken();
+      }
+    }
+    // Auto login demo recruiter
+    try {
+      const res = await this.login({
+        email: 'recruiter@example.com',
+        password: 'RecruiterPass123!',
+      });
+      return res.access_token;
+    } catch {
+      const reg = await this.register({
+        email: 'recruiter@example.com',
+        password: 'RecruiterPass123!',
+        role: 'recruiter',
+        full_name: 'Demo Recruiter',
+      });
+      return reg.access_token;
+    }
+  }
+
   // Candidate Profile
   async getMyProfile(): Promise<CandidateProfile> {
     return this.request<CandidateProfile>('/candidates/profile');

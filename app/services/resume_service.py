@@ -86,7 +86,7 @@ class ResumeService:
             file_ext = Path(doc.file_name).suffix.lower()
             if file_ext == ".pdf":
                 raw_text, is_scanned = PDFExtractor.extract_text(doc.stored_file_path)
-            elif file_ext == ".docx":
+            elif file_ext in [".docx", ".doc"]:
                 raw_text, is_scanned = DOCXExtractor.extract_text(doc.stored_file_path)
             else:
                 raise ResumeExtractionException(f"Unsupported file format: {file_ext}")

@@ -512,11 +512,11 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ onOpenAu
                           <span>{c.total_years_experience} Years Exp</span>
                           <span>&bull;</span>
                           {c.city && <span>{c.city}, {c.country}</span>}
-                          {c.distance_km !== undefined && (
+                          {c.distance_km != null && (
                             <>
                               <span>&bull;</span>
                               <span className="font-semibold text-blue-600">
-                                📍 {c.distance_km.toFixed(1)} km away
+                                📍 {Number(c.distance_km).toFixed(1)} km away
                               </span>
                             </>
                           )}
