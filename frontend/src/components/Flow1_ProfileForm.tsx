@@ -23,14 +23,14 @@ import {
   ListOrdered,
   Undo,
   Redo,
-  Edit2,
-  Lightbulb,
-  ArrowLeft,
   Phone,
   Mail,
   MapPin,
   Calendar,
   Layers,
+  User,
+  Globe,
+  Users,
 } from 'lucide-react';
 
 interface Flow1Props {
@@ -63,8 +63,6 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   const [selectedChoice, setSelectedChoice] = useState<'upload' | 'create'>('upload');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Step tips accordion state
-  const [showTips, setShowTips] = useState(false);
 
   // Identity & Contact details
   const [fullName, setFullName] = useState('');
@@ -531,7 +529,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
     };
 
     return (
-      <div className="fixed inset-0 z-30 bg-[#1E70F9] flex flex-col items-center justify-start sm:justify-center p-4 pt-24 sm:pt-20 pb-8 sm:pb-12 font-sans antialiased text-[#111827] overflow-y-auto select-none">
+      <div className="w-full flex flex-col items-center justify-center p-4 pt-4 sm:pt-6 pb-12 font-sans antialiased text-[#111827] select-none">
         {/* Hidden File Input for Resume Upload */}
         <input
           id="choice-resume-file-input"
@@ -706,38 +704,28 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
   // PROGRESSIVE STEP-BY-STEP CENTERED WIZARD (IMAGES 2, 3, 4 MATCH)
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-[calc(100vh-65px)] bg-[#FAF7F2] py-8 sm:py-10 px-4 sm:px-6 font-sans text-[#141413] antialiased">
-      <div className="max-w-3xl mx-auto">
-
-        {/* ── TOP STEPPER PROGRESS BAR (IMAGE 2 MATCH) ── */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-2">
-            <button
-              type="button"
-              onClick={() => setCurrentStep('choice')}
-              className="text-xs font-semibold text-[#64748B] hover:text-[#141413] flex items-center gap-1.5 transition cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" /> Choose Method
-            </button>
-            <span className="text-xs font-bold text-[#64748B]">
-              Step {currentStepIndex} of 6
-            </span>
+    <div className="w-full flex flex-col items-center justify-center p-4 pt-4 sm:pt-6 pb-16 font-sans antialiased text-[#0F172A] min-h-[calc(100vh-80px)]">
+      {/* ── 2. MAIN CONTAINER: ONE LARGE CENTERED WHITE ROUNDED RECTANGLE CARD ── */}
+      <div className="w-full max-w-[960px] bg-white rounded-[28px] sm:rounded-[36px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.22),0_10px_25px_-10px_rgba(0,0,0,0.12)] border-0 p-6 sm:p-10 md:p-12 transition-all">
+        
+        {/* ── 3. HEADER AREA ── */}
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h1 className="text-[24px] sm:text-[28px] font-bold text-[#0F172A] tracking-tight font-sans">
+              Create Your Resume
+            </h1>
+            <p className="text-[13.5px] sm:text-[14.5px] text-[#64748B] mt-1 font-normal">
+              Fill in your details to build a professional resume
+            </p>
           </div>
+          <div className="text-[13.5px] sm:text-[14.5px] font-medium text-[#475569] shrink-0 pt-1">
+            Step {currentStepIndex} of 6
+          </div>
+        </div>
 
-          {/* Stepper Track Line with Nodes */}
-          <div className="relative flex items-center justify-between mt-4">
-            {/* Connecting Track Line */}
-            <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-[#E2E8F0] -translate-y-1/2 z-0" />
-            
-            {/* Active Progress Fill Line */}
-            <div
-              className="absolute top-1/2 left-0 h-[2px] bg-[#0091FF] -translate-y-1/2 z-0 transition-all duration-300"
-              style={{
-                width: `${((currentStepIndex - 1) / (stepsList.length - 1)) * 100}%`,
-              }}
-            />
-
-            {/* Step Nodes */}
+        {/* ── 4. PROGRESS NAVIGATION (6-STEP PROGRESS WITH HORIZONTAL UNDERLINE) ── */}
+        <div className="w-full relative mb-8 sm:mb-10">
+          <div className="flex items-center justify-between overflow-x-auto pb-3.5 scrollbar-none gap-2 sm:gap-4">
             {stepsList.map((step) => {
               const isActive = step.key === currentStep;
               const isPast = step.index < currentStepIndex;
@@ -747,286 +735,251 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   key={step.key}
                   type="button"
                   onClick={() => setCurrentStep(step.key)}
-                  className="relative z-10 flex flex-col items-center group cursor-pointer focus:outline-none"
+                  className="flex items-center gap-2 sm:gap-2.5 pb-2.5 relative group cursor-pointer shrink-0 select-none focus:outline-none"
                 >
-                  <span
-                    className={`text-[11px] sm:text-xs font-bold mb-2 transition-colors ${
+                  {/* Circular step badge */}
+                  <div
+                    className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[12px] font-semibold transition-all ${
                       isActive
-                        ? 'text-[#0091FF]'
+                        ? 'bg-[#1E70F9] text-white shadow-xs'
                         : isPast
-                        ? 'text-[#1E293B]'
-                        : 'text-[#94A3B8]'
+                        ? 'bg-[#F1F5F9] text-[#1E70F9] border border-[#CBD5E1]'
+                        : 'bg-[#F8FAFC] text-[#64748B] border border-[#CBD5E1]'
+                    }`}
+                  >
+                    {step.index}
+                  </div>
+
+                  {/* Step Label */}
+                  <span
+                    className={`text-[13px] sm:text-[14px] font-medium transition-colors ${
+                      isActive ? 'text-[#1E70F9] font-semibold' : 'text-[#475569] group-hover:text-[#0F172A]'
                     }`}
                   >
                     {step.label}
                   </span>
-                  
-                  {/* Circle Indicator */}
-                  <div
-                    className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center transition-all ${
-                      isActive
-                        ? 'border-2 border-[#0091FF] bg-white ring-4 ring-[#0091FF]/20 scale-110'
-                        : isPast
-                        ? 'bg-[#0091FF] text-white'
-                        : 'border-2 border-[#CBD5E1] bg-white'
-                    }`}
-                  >
-                    {isPast && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
-                    {isActive && <div className="w-2 h-2 rounded-full bg-[#0091FF]"></div>}
-                  </div>
+
+                  {/* Active Highlight Bar Underline */}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#1E70F9] rounded-full z-10" />
+                  )}
                 </button>
               );
             })}
           </div>
+          {/* Baseline track line */}
+          <div className="w-full h-[1px] bg-[#E2E8F0] -mt-[1px]" />
         </div>
 
-        {/* ── STEP HEADER: TITLE + EDIT PENCIL + TIPS PILL ── */}
-        <div className="flex items-start justify-between gap-4 mb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1E293B] font-serif">
-                {currentStep === 'contacts' && 'Contacts'}
-                {currentStep === 'experience' && 'Experience'}
-                {currentStep === 'education' && 'Education'}
-                {currentStep === 'skills' && 'Skills'}
-                {currentStep === 'summary' && 'Summary'}
-                {currentStep === 'finalize' && 'Finalize'}
-              </h1>
-              <Edit2 className="w-4 h-4 text-[#94A3B8]" />
-            </div>
-            <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-              {currentStep === 'contacts' && 'Enter your contact details so employers and recruiters can reach you.'}
-              {currentStep === 'experience' && 'List your work experience starting with the most recent position first.'}
-              {currentStep === 'education' && 'List your degrees, academic achievements, and formal education.'}
-              {currentStep === 'skills' && 'Add your technical stack, languages, and proficiencies below.'}
-              {currentStep === 'summary' && 'A concise summary of your technical depth, identity, and career goals.'}
-              {currentStep === 'finalize' && 'Review your verified dossier before publishing for recruiter discovery.'}
-            </p>
-          </div>
-
-          {/* Tips Pill (Image 2 match: 💡 Experience tips ⌵) */}
-          <button
-            type="button"
-            onClick={() => setShowTips(!showTips)}
-            className="shrink-0 inline-flex items-center gap-1.5 bg-[#FFFBEB] hover:bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-2xs transition cursor-pointer"
-          >
-            <Lightbulb className="w-3.5 h-3.5 text-[#F59E0B]" />
-            <span>
-              {currentStep === 'experience' && 'Experience tips'}
-              {currentStep === 'contacts' && 'Contact tips'}
-              {currentStep === 'education' && 'Education tips'}
-              {currentStep === 'skills' && 'Skills tips'}
-              {currentStep === 'summary' && 'Summary tips'}
-              {currentStep === 'finalize' && 'Review tips'}
-            </span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showTips ? 'rotate-180' : ''}`} />
-          </button>
+        {/* ── 5. FORM SECTION HEADER ── */}
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-[22px] sm:text-[24px] font-bold text-[#0F172A] tracking-tight font-sans">
+            {currentStep === 'contacts' && 'Contacts'}
+            {currentStep === 'experience' && 'Experience'}
+            {currentStep === 'education' && 'Education'}
+            {currentStep === 'skills' && 'Skills'}
+            {currentStep === 'summary' && 'Summary'}
+            {currentStep === 'finalize' && 'Finalize'}
+          </h2>
+          <p className="text-[13.5px] sm:text-[14px] text-[#64748B] mt-1 font-normal">
+            {currentStep === 'contacts' && 'Enter your contact details so employers and recruiters can reach you.'}
+            {currentStep === 'experience' && 'List your work experience starting with the most recent position first.'}
+            {currentStep === 'education' && 'List your degrees, academic achievements, and formal education.'}
+            {currentStep === 'skills' && 'Add your technical stack, languages, and proficiencies below.'}
+            {currentStep === 'summary' && 'A concise summary of your technical depth, identity, and career goals.'}
+            {currentStep === 'finalize' && 'Review your verified dossier before publishing for recruiter discovery.'}
+          </p>
         </div>
-
-        {/* Collapsible Tips Alert Box */}
-        {showTips && (
-          <div className="mb-6 p-4 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] text-xs leading-relaxed animate-fadeIn">
-            {currentStep === 'contacts' && (
-              <p>
-                <strong>Contact Advice:</strong> Ensure your phone number, city, and email are accurate. Recruiters rely on geographical proximity and clear communication channels to initiate interviews.
-              </p>
-            )}
-            {currentStep === 'experience' && (
-              <p>
-                <strong>Experience Advice:</strong> Use clear action verbs, quantify impact (e.g. latency reduction, team growth, revenue scale), and highlight key technologies in bullet points.
-              </p>
-            )}
-            {currentStep === 'education' && (
-              <p>
-                <strong>Education Advice:</strong> Include formal degree titles, academic institutions, and graduation years. You can add relevant honors or major focus areas.
-              </p>
-            )}
-            {currentStep === 'skills' && (
-              <p>
-                <strong>Skills Advice:</strong> Only include technologies and stacks you are comfortable being interviewed on. Clean, rectangular tags are indexed directly into the recruiter search engine.
-              </p>
-            )}
-            {currentStep === 'summary' && (
-              <p>
-                <strong>Summary Advice:</strong> Keep it between 2 to 4 sentences. Outline your core specializations, engineering philosophy, and the highest-impact projects you have spearheaded.
-              </p>
-            )}
-            {currentStep === 'finalize' && (
-              <p>
-                <strong>Final Review:</strong> Double-check all entries. Once you click "Save & Publish Dossier", your candidate persona will be generated and made available to hiring organizations.
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Error / Alert Feedback */}
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <div className="mb-6 p-3.5 px-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {saveSuccess && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="mb-6 p-3.5 px-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>Profile successfully published! Opening your dossier...</span>
           </div>
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════
-            STEP 1: CONTACTS (With Image 4 Exact Rectangular Gender Buttons)
+            STEP 1: CONTACTS (1:1 Reference Match)
         ═══════════════════════════════════════════════════════════════════ */}
         {currentStep === 'contacts' && (
-          <div className="bg-white rounded-[24px] border border-[#E8E2D9] p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             
-            {/* Full Name & Professional Headline */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Row 1: Full Name * & Professional Headline */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5">
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
                   Full Name *
                 </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="e.g. Jessica Patrick"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <User className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Demuni Jayasmith"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5">
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
                   Professional Headline
                 </label>
-                <input
-                  type="text"
-                  value={headline}
-                  onChange={(e) => setHeadline(e.target.value)}
-                  placeholder="e.g. Senior Distributed Systems Engineer"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <Briefcase className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={headline}
+                    onChange={(e) => setHeadline(e.target.value)}
+                    placeholder="Lead AI Systems & Full-Stack Software Engineer"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Phone, Email & Date of Birth */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Row 2: Phone Number, Email Address & Date of Birth */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5 flex items-center gap-1">
-                  <Phone className="w-3.5 h-3.5 text-[#64748B]" /> Phone Number
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
+                  Phone Number
                 </label>
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. 707-723-4127"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <Phone className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+94 77 123 4567"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5 flex items-center gap-1">
-                  <Mail className="w-3.5 h-3.5 text-[#64748B]" /> Email Address
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
+                  Email Address
                 </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. jessica@example.com"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="e.g. jessica@example.com"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5 flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#64748B]" /> Date of Birth
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
+                  Date of Birth
                 </label>
-                <input
-                  type="text"
-                  value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                  placeholder="e.g. Jan 12, 1981"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <Calendar className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={dateOfBirth}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                    placeholder="2002-04-15"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Location (City & Country) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Row 3: City & Country */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-[#64748B]" /> City
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
+                  City
                 </label>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. San Francisco"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <MapPin className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="Colombo"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-4 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#1E293B] mb-1.5">
+                <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
                   Country
                 </label>
-                <input
-                  type="text"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  placeholder="e.g. United States"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
-                />
+                <div className="relative flex items-center">
+                  <Globe className="w-4 h-4 text-[#64748B] absolute left-3.5 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    placeholder="Sri Lanka"
+                    className="w-full h-[46px] bg-white border border-[#CBD5E1] hover:border-[#94A3B8] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/15 rounded-[12px] sm:rounded-[14px] pl-10 pr-10 text-[13.5px] text-[#1E293B] font-medium placeholder-[#94A3B8] outline-none transition"
+                  />
+                  <ChevronDown className="w-4 h-4 text-[#64748B] absolute right-3.5 pointer-events-none" />
+                </div>
               </div>
             </div>
 
-            {/* ── GENDER SELECTION (EXACT MATCH IMAGE 4 RECTANGULAR BUTTONS) ── */}
-            <div className="pt-2 border-t border-[#F1F5F9]">
-              <label className="block text-sm font-bold text-[#1E293B] mb-3">
-                What is your gender ?
+            {/* Row 4: Gender (3 Selection Buttons with Minimal Icons) */}
+            <div>
+              <label className="block text-[13px] font-semibold text-[#1E293B] mb-2">
+                Gender
               </label>
-              
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-[460px]">
                 {/* Male Button */}
                 <button
                   type="button"
                   onClick={() => setGender(gender === 'male' ? '' : 'male')}
-                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`h-[44px] rounded-[12px] sm:rounded-[14px] text-[13.5px] font-medium transition-all flex items-center justify-center gap-2 cursor-pointer select-none ${
                     gender === 'male'
-                      ? 'bg-[#00BFA5] text-white shadow-sm border border-[#00BFA5]'
-                      : 'bg-[#F4EFEA] hover:bg-[#EAE5DE] text-[#1E293B] border border-transparent'
+                      ? 'border-[1.5px] border-[#1E70F9] bg-[#EBF3FE] text-[#1E70F9] shadow-2xs font-semibold'
+                      : 'border border-[#CBD5E1] bg-white hover:border-[#94A3B8] text-[#1E293B]'
                   }`}
                 >
+                  <Users className="w-4 h-4" />
                   <span>Male</span>
-                  <span className="text-base leading-none">♂</span>
                 </button>
 
                 {/* Female Button */}
                 <button
                   type="button"
                   onClick={() => setGender(gender === 'female' ? '' : 'female')}
-                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`h-[44px] rounded-[12px] sm:rounded-[14px] text-[13.5px] font-medium transition-all flex items-center justify-center gap-2 cursor-pointer select-none ${
                     gender === 'female'
-                      ? 'bg-[#00BFA5] text-white shadow-sm border border-[#00BFA5]'
-                      : 'bg-[#F4EFEA] hover:bg-[#EAE5DE] text-[#1E293B] border border-transparent'
+                      ? 'border-[1.5px] border-[#1E70F9] bg-[#EBF3FE] text-[#1E70F9] shadow-2xs font-semibold'
+                      : 'border border-[#CBD5E1] bg-white hover:border-[#94A3B8] text-[#1E293B]'
                   }`}
                 >
-                  <span>Female</span>
-                  <span className="text-base leading-none">♀</span>
+                  <span className="text-[15px] leading-none">♀</span>
+                  <span>Female ♀</span>
                 </button>
 
                 {/* Other Button */}
                 <button
                   type="button"
                   onClick={() => setGender(gender === 'other' ? '' : 'other')}
-                  className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`h-[44px] rounded-[12px] sm:rounded-[14px] text-[13.5px] font-medium transition-all flex items-center justify-center gap-2 cursor-pointer select-none ${
                     gender === 'other'
-                      ? 'bg-[#00BFA5] text-white shadow-sm border border-[#00BFA5]'
-                      : 'bg-[#F4EFEA] hover:bg-[#EAE5DE] text-[#1E293B] border border-transparent'
+                      ? 'border-[1.5px] border-[#1E70F9] bg-[#EBF3FE] text-[#1E70F9] shadow-2xs font-semibold'
+                      : 'border border-[#CBD5E1] bg-white hover:border-[#94A3B8] text-[#1E293B]'
                   }`}
                 >
+                  <User className="w-4 h-4" />
                   <span>Other</span>
-                  <span className="text-base leading-none">⚧</span>
                 </button>
               </div>
             </div>
@@ -1040,7 +993,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
         {currentStep === 'experience' && (
           <div className="space-y-5">
             {workHistory.length === 0 ? (
-              <div className="bg-white rounded-[24px] border-2 border-dashed border-[#E8E2D9] p-10 text-center">
+              <div className="bg-white rounded-[24px] border-2 border-dashed border-[#E2E8F0] p-10 text-center">
                 <Briefcase className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" />
                 <h3 className="text-sm font-bold text-[#1E293B]">No work experience listed yet</h3>
                 <p className="text-xs text-[#64748B] mt-1 mb-4">
@@ -1049,7 +1002,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                 <button
                   type="button"
                   onClick={handleAddRole}
-                  className="bg-[#0091FF] hover:bg-blue-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition cursor-pointer inline-flex items-center gap-1.5"
+                  className="bg-[#1E70F9] hover:bg-blue-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition cursor-pointer inline-flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" /> Add work experience
                 </button>
@@ -1058,7 +1011,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               workHistory.map((role, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-[24px] border border-[#E8E2D9] shadow-xs p-6 sm:p-7 space-y-4 transition-all"
+                  className="bg-white rounded-[24px] border border-[#E2E8F0] shadow-xs p-6 sm:p-7 space-y-4 transition-all"
                 >
                   {/* Card Header (Image 2 match: Role, Company \n MM/YYYY - MM/YYYY + Collapse + Trash) */}
                   <div className="flex items-start justify-between pb-3 border-b border-[#F1F5F9]">
@@ -1105,7 +1058,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                             value={role.title}
                             onChange={(e) => handleUpdateRole(idx, 'title', e.target.value)}
                             placeholder="e.g. Junior Accountant"
-                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                           />
                         </div>
 
@@ -1118,7 +1071,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                             value={role.company}
                             onChange={(e) => handleUpdateRole(idx, 'company', e.target.value)}
                             placeholder="e.g. Company name"
-                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                           />
                         </div>
                       </div>
@@ -1134,7 +1087,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                             value={role.location || ''}
                             onChange={(e) => handleUpdateRole(idx, 'location', e.target.value)}
                             placeholder="San Francisco, CA, USA"
-                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                           />
                         </div>
 
@@ -1147,7 +1100,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                             value={role.start_date || ''}
                             onChange={(e) => handleUpdateRole(idx, 'start_date', e.target.value)}
                             placeholder="MM/YYYY"
-                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                           />
                         </div>
 
@@ -1161,7 +1114,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                             value={role.is_current ? 'Present' : (role.end_date || '')}
                             onChange={(e) => handleUpdateRole(idx, 'end_date', e.target.value)}
                             placeholder="MM/YYYY"
-                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium disabled:bg-slate-100 disabled:text-slate-400"
+                            className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium disabled:bg-slate-100 disabled:text-slate-400"
                           />
                         </div>
                       </div>
@@ -1173,7 +1126,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                           id={`current-work-${idx}`}
                           checked={role.is_current || false}
                           onChange={(e) => handleUpdateRole(idx, 'is_current', e.target.checked)}
-                          className="w-4 h-4 rounded border-slate-300 text-[#0091FF] focus:ring-[#0091FF] cursor-pointer"
+                          className="w-4 h-4 rounded border-slate-300 text-[#1E70F9] focus:ring-[#1E70F9] cursor-pointer"
                         />
                         <label htmlFor={`current-work-${idx}`} className="text-xs font-medium text-[#1E293B] cursor-pointer">
                           Currently work here
@@ -1186,7 +1139,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                           Description
                         </label>
 
-                        <div className="border border-[#CBD5E1] rounded-xl bg-white overflow-hidden focus-within:border-[#0091FF] focus-within:ring-2 focus-within:ring-[#0091FF]/20 transition">
+                        <div className="border border-[#CBD5E1] rounded-xl bg-white overflow-hidden focus-within:border-[#1E70F9] focus-within:ring-2 focus-within:ring-[#1E70F9]/20 transition">
                           
                           {/* Mini Formatting Toolbar (Image 2 match) */}
                           <div className="bg-[#F8FAFC] border-b border-[#E2E8F0] px-3 py-2 flex flex-wrap items-center justify-between gap-2">
@@ -1278,9 +1231,9 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                               className="inline-flex items-center gap-1.5 bg-[#EEF2F6] hover:bg-[#E2E8F0] text-[#334155] px-3 py-1 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer disabled:opacity-50"
                             >
                               {isAiGenerating ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0091FF]" />
+                                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#1E70F9]" />
                               ) : (
-                                <Sparkles className="w-3.5 h-3.5 text-[#0091FF]" />
+                                <Sparkles className="w-3.5 h-3.5 text-[#1E70F9]" />
                               )}
                               <span>Generate with AI</span>
                             </button>
@@ -1307,7 +1260,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             <button
               type="button"
               onClick={handleAddRole}
-              className="text-xs sm:text-sm font-bold text-[#0091FF] hover:underline inline-flex items-center gap-1.5 cursor-pointer py-1"
+              className="text-xs sm:text-sm font-bold text-[#1E70F9] hover:underline inline-flex items-center gap-1.5 cursor-pointer py-1"
             >
               <Plus className="w-4 h-4" /> Add work experience
             </button>
@@ -1320,7 +1273,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
         {currentStep === 'education' && (
           <div className="space-y-5">
             {education.length === 0 ? (
-              <div className="bg-white rounded-[24px] border-2 border-dashed border-[#E8E2D9] p-10 text-center">
+              <div className="bg-white rounded-[24px] border-2 border-dashed border-[#E2E8F0] p-10 text-center">
                 <GraduationCap className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" />
                 <h3 className="text-sm font-bold text-[#1E293B]">No degrees or education added yet</h3>
                 <p className="text-xs text-[#64748B] mt-1 mb-4">
@@ -1329,7 +1282,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                 <button
                   type="button"
                   onClick={handleAddEducation}
-                  className="bg-[#0091FF] hover:bg-blue-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition cursor-pointer inline-flex items-center gap-1.5"
+                  className="bg-[#1E70F9] hover:bg-blue-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs transition cursor-pointer inline-flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" /> Add education
                 </button>
@@ -1338,11 +1291,11 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               education.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-[24px] border border-[#E8E2D9] shadow-xs p-6 sm:p-7 space-y-4"
+                  className="bg-white rounded-[24px] border border-[#E2E8F0] shadow-xs p-6 sm:p-7 space-y-4"
                 >
                   <div className="flex items-center justify-between pb-3 border-b border-[#F1F5F9]">
                     <div className="flex items-center gap-2 text-xs font-bold text-[#1E293B]">
-                      <GraduationCap className="w-4 h-4 text-[#0091FF]" />
+                      <GraduationCap className="w-4 h-4 text-[#1E70F9]" />
                       <span>{item.degree || 'Degree Program'} - {item.institution || 'School Name'}</span>
                     </div>
 
@@ -1365,7 +1318,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                         value={item.institution}
                         onChange={(e) => handleUpdateEducation(idx, 'institution', e.target.value)}
                         placeholder="e.g. Stanford University"
-                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                       />
                     </div>
 
@@ -1378,7 +1331,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                         value={item.degree}
                         onChange={(e) => handleUpdateEducation(idx, 'degree', e.target.value)}
                         placeholder="e.g. B.S. in Computer Science"
-                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                       />
                     </div>
                   </div>
@@ -1393,7 +1346,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                         value={item.field_of_study || ''}
                         onChange={(e) => handleUpdateEducation(idx, 'field_of_study', e.target.value)}
                         placeholder="e.g. Artificial Intelligence & Distributed Systems"
-                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                       />
                     </div>
 
@@ -1406,7 +1359,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                         value={item.year || ''}
                         onChange={(e) => handleUpdateEducation(idx, 'year', e.target.value)}
                         placeholder="e.g. 2023"
-                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                        className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                       />
                     </div>
                   </div>
@@ -1417,7 +1370,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             <button
               type="button"
               onClick={handleAddEducation}
-              className="text-xs sm:text-sm font-bold text-[#0091FF] hover:underline inline-flex items-center gap-1.5 cursor-pointer py-1"
+              className="text-xs sm:text-sm font-bold text-[#1E70F9] hover:underline inline-flex items-center gap-1.5 cursor-pointer py-1"
             >
               <Plus className="w-4 h-4" /> Add education
             </button>
@@ -1431,7 +1384,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             - EXACT RECTANGULAR BUTTON-LIKE DESIGN MATCHING IMAGE 4
         ═══════════════════════════════════════════════════════════════════ */}
         {currentStep === 'skills' && (
-          <div className="bg-white rounded-[24px] border border-[#E8E2D9] p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-6 sm:p-8 shadow-xs space-y-6">
             
             {/* Input to add skills */}
             <div>
@@ -1445,13 +1398,13 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   value={newSkillDraft}
                   onChange={(e) => setNewSkillDraft(e.target.value)}
                   placeholder="Type a skill (e.g. Python, FastAPI, Docker, PyTorch, React)..."
-                  className="flex-1 bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                  className="flex-1 bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                 />
                 
                 {/* Rectangular Button design matching Image 4 */}
                 <button
                   type="submit"
-                  className="bg-[#00BFA5] hover:bg-[#00A892] text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-xs transition active:scale-98 cursor-pointer flex items-center gap-1.5"
+                  className="bg-[#1E70F9] hover:bg-[#00A892] text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-xs transition active:scale-98 cursor-pointer flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" /> Add Skill
                 </button>
@@ -1476,7 +1429,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               </div>
 
               {skills.length === 0 ? (
-                <div className="py-8 px-4 text-center border-2 border-dashed border-[#E2E8F0] rounded-xl bg-[#FAF7F2]">
+                <div className="py-8 px-4 text-center border-2 border-dashed border-[#E2E8F0] rounded-xl bg-[#F8FAFC]">
                   <Layers className="w-6 h-6 text-[#94A3B8] mx-auto mb-2" />
                   <p className="text-xs font-medium text-[#64748B]">
                     Nothing is here yet. Type any skill above and click "Add Skill".
@@ -1488,7 +1441,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   {skills.map((skill) => (
                     <div
                       key={skill}
-                      className="bg-[#F4EFEA] hover:bg-[#EAE5DE] text-[#1E293B] border border-[#E8E2D9] rounded-xl px-4 py-2 text-xs font-semibold flex items-center gap-2 shadow-2xs transition group"
+                      className="bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#1E293B] border border-[#E2E8F0] rounded-xl px-4 py-2 text-xs font-semibold flex items-center gap-2 shadow-2xs transition group"
                     >
                       <span>{skill}</span>
                       <button
@@ -1548,19 +1501,19 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             STEP 5: SUMMARY & PHOTO & AVAILABILITY
         ═══════════════════════════════════════════════════════════════════ */}
         {currentStep === 'summary' && (
-          <div className="bg-white rounded-[24px] border border-[#E8E2D9] p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-6 sm:p-8 shadow-xs space-y-6">
             
             {/* Portrait Photo Row */}
-            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-[#FAF7F2] border border-[#E8E2D9]">
+            <div className="flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
               <div className="relative group shrink-0">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
                     alt="Candidate portrait"
-                    className="w-20 h-20 rounded-2xl object-cover object-center border border-[#D9D1C7] shadow-xs"
+                    className="w-20 h-20 rounded-2xl object-cover object-center border border-[#CBD5E1] shadow-xs"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl bg-[#EAE5DE] border border-[#D9D1C7] flex items-center justify-center text-xl font-bold text-[#635B53]">
+                  <div className="w-20 h-20 rounded-2xl bg-[#E2E8F0] border border-[#CBD5E1] flex items-center justify-center text-xl font-bold text-[#635B53]">
                     {fullName ? fullName[0] : '•'}
                   </div>
                 )}
@@ -1584,7 +1537,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   <span className="text-xs font-bold text-[#1E293B]">Profile Portrait</span>
                   <label
                     htmlFor="summary-avatar-input"
-                    className="text-xs font-semibold text-[#0091FF] hover:underline cursor-pointer"
+                    className="text-xs font-semibold text-[#1E70F9] hover:underline cursor-pointer"
                   >
                     Upload photo
                   </label>
@@ -1594,7 +1547,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="Or paste an image URL (e.g. https://...)"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                 />
                 <p className="text-[11px] text-[#64748B]">
                   Displayed in candidate search cards. Auto-extracted if you uploaded an image CV.
@@ -1616,9 +1569,9 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   className="inline-flex items-center gap-1.5 bg-[#EEF2F6] hover:bg-[#E2E8F0] text-[#334155] px-3 py-1 rounded-lg text-xs font-semibold shadow-2xs transition cursor-pointer disabled:opacity-50"
                 >
                   {isAiGenerating ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0091FF]" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#1E70F9]" />
                   ) : (
-                    <Sparkles className="w-3.5 h-3.5 text-[#0091FF]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#1E70F9]" />
                   )}
                   <span>Generate with AI</span>
                 </button>
@@ -1629,7 +1582,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="A concise summary of your technical depth, leadership strengths, and career aspirations..."
-                className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium resize-y leading-relaxed"
+                className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-3 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium resize-y leading-relaxed"
               />
             </div>
 
@@ -1651,8 +1604,8 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                     onClick={() => setAvailability(opt.key as any)}
                     className={`py-3 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center cursor-pointer ${
                       availability === opt.key
-                        ? 'bg-[#00BFA5] text-white shadow-sm border border-[#00BFA5]'
-                        : 'bg-[#F4EFEA] hover:bg-[#EAE5DE] text-[#1E293B] border border-transparent'
+                        ? 'bg-[#1E70F9] text-white shadow-sm border border-[#1E70F9]'
+                        : 'bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#1E293B] border border-transparent'
                     }`}
                   >
                     {opt.label}
@@ -1674,7 +1627,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   value={totalYears}
                   onChange={(e) => setTotalYears(parseFloat(e.target.value) || 0)}
                   placeholder="e.g. 5"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                 />
               </div>
 
@@ -1687,7 +1640,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   value={desiredSalary}
                   onChange={(e) => setDesiredSalary(e.target.value)}
                   placeholder="e.g. $160,000"
-                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#0091FF] focus:ring-2 focus:ring-[#0091FF]/20 focus:outline-none transition font-medium"
+                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-4 py-2.5 text-xs text-[#1E293B] focus:border-[#1E70F9] focus:ring-2 focus:ring-[#1E70F9]/20 focus:outline-none transition font-medium"
                 />
               </div>
             </div>
@@ -1699,16 +1652,16 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             STEP 6: FINALIZE & LIVE PREVIEW
         ═══════════════════════════════════════════════════════════════════ */}
         {currentStep === 'finalize' && (
-          <div className="bg-white rounded-[24px] border border-[#E8E2D9] p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="bg-white rounded-[24px] border border-[#E2E8F0] p-6 sm:p-8 shadow-xs space-y-6">
             
             {/* Dossier Summary Card */}
-            <div className="bg-[#FAF7F2] rounded-2xl border border-[#E8E2D9] p-6">
-              <div className="flex flex-col sm:flex-row items-center gap-5 pb-5 border-b border-[#E8E2D9]">
+            <div className="bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] p-6">
+              <div className="flex flex-col sm:flex-row items-center gap-5 pb-5 border-b border-[#E2E8F0]">
                 {avatarUrl ? (
                   <img
                     src={avatarUrl}
                     alt={fullName}
-                    className="w-20 h-20 rounded-2xl object-cover border border-[#D9D1C7] shadow-xs"
+                    className="w-20 h-20 rounded-2xl object-cover border border-[#CBD5E1] shadow-xs"
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-2xl bg-[#0B0C10] text-white flex items-center justify-center font-bold text-2xl">
@@ -1720,14 +1673,14 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                     <h2 className="text-xl font-bold text-[#1E293B]">{fullName || 'Untitled Candidate'}</h2>
                     {gender && (
-                      <span className="bg-[#00BFA5] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-2xs">
+                      <span className="bg-[#1E70F9] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-lg shadow-2xs">
                         {gender === 'male' && 'Male ♂'}
                         {gender === 'female' && 'Female ♀'}
                         {gender === 'other' && 'Other ⚧'}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs font-semibold text-[#0091FF]">{headline || 'Software Engineer'}</p>
+                  <p className="text-xs font-semibold text-[#1E70F9]">{headline || 'Software Engineer'}</p>
                   <p className="text-[11px] text-[#64748B]">
                     {[city, country].filter(Boolean).join(', ') || 'Remote'} • {totalYears} years experience
                   </p>
@@ -1743,7 +1696,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
 
               {/* Skills preview */}
               {skills.length > 0 && (
-                <div className="pt-4 border-t border-[#E8E2D9]">
+                <div className="pt-4 border-t border-[#E2E8F0]">
                   <span className="block text-[11px] font-bold text-[#64748B] uppercase tracking-wider mb-2">
                     Technical Stack ({skills.length})
                   </span>
@@ -1761,7 +1714,7 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
               )}
 
               {/* Work history count */}
-              <div className="pt-4 border-t border-[#E8E2D9] grid grid-cols-2 gap-4 text-xs">
+              <div className="pt-4 border-t border-[#E2E8F0] grid grid-cols-2 gap-4 text-xs">
                 <div>
                   <span className="text-[#64748B] block text-[11px]">Experience Entries</span>
                   <span className="font-bold text-[#1E293B]">{workHistory.length} roles documented</span>
@@ -1784,20 +1737,16 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════════════════════
-            BOTTOM NAVIGATION BAR (IMAGE 2 EXACT MATCH)
-            - LEFT: [ Back ] (Rounded white button with subtle border)
-            - RIGHT: [ Next: <Step> ] (Solid vibrant blue/emerald rounded button)
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div className="mt-8 flex items-center justify-between border-t border-[#E2E8F0] pt-6 pb-12">
+        {/* ── 8. BOTTOM NAVIGATION BAR ── */}
+        <div className="mt-10 sm:mt-12 flex items-center justify-between pt-6 border-t border-[#F1F5F9]">
           
           {/* Back Button */}
           <button
             type="button"
             onClick={goToPrevStep}
-            className="rounded-xl border border-[#CBD5E1] bg-white hover:bg-slate-50 text-[#334155] px-6 py-2.5 text-xs sm:text-sm font-semibold transition cursor-pointer shadow-2xs"
+            className="h-[46px] px-6 sm:px-7 rounded-[14px] border border-[#CBD5E1] bg-white hover:bg-slate-50 text-[#0F172A] text-[14px] font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
           >
-            Back
+            ← Back
           </button>
 
           {/* Next Button */}
@@ -1805,10 +1754,10 @@ export const Flow1_ProfileForm: React.FC<Flow1Props> = ({ onProfileSaved }) => {
             type="button"
             disabled={isSaving}
             onClick={goToNextStep}
-            className="rounded-xl bg-[#0091FF] hover:bg-blue-600 active:scale-98 text-white px-7 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-2 cursor-pointer disabled:opacity-60"
+            className="h-[46px] px-7 sm:px-9 rounded-[14px] bg-[#1E70F9] hover:bg-[#165FD8] active:scale-98 text-white text-[14px] font-semibold shadow-sm transition flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
           >
             {isSaving && <Loader2 className="w-4 h-4 animate-spin text-white" />}
-            <span>{getNextButtonLabel()}</span>
+            <span>{getNextButtonLabel()} →</span>
           </button>
 
         </div>

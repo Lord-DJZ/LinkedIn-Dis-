@@ -143,9 +143,11 @@ export function App() {
     return <LoginView onLoginSuccess={handleLoginSuccess} />;
   }
 
-  // ── AUTHENTICATED SYSTEM (Claude Warm Stone Aesthetic) ──
+  const isCandidateProfile = currentUser?.role === 'candidate' && activeTab === 'profile';
+
+  // ── AUTHENTICATED SYSTEM (Claude Warm Stone Aesthetic / Solid Blue Resume Onboarding) ──
   return (
-    <div className="min-h-screen bg-[#FAF7F2] font-sans antialiased text-[#141413] flex flex-col selection:bg-[#141413] selection:text-white">
+    <div className={`min-h-screen ${isCandidateProfile ? 'bg-[#1E70F9]' : 'bg-[#FAF7F2]'} font-sans antialiased text-[#141413] flex flex-col selection:bg-[#1E70F9] selection:text-white`}>
       
       {/* ── TOP NAVBAR (Profile, Companies, Search, Pipeline pills) ── */}
       <AppNavbar
