@@ -9,13 +9,21 @@ import type {
 } from '../types';
 import { localStore } from './localStore';
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== 'undefined' && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api/v1'
-    : '/api/v1');
+// Detect if running on a static host without a specified backend URL (e.g. Vercel)
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' ||
+   window.location.hostname === '127.0.0.1' ||
+   window.location.hostname === '0.0.0.0');
+
+const configuredApiUrl = import.meta.env.VITE_API_URL;
+// If user explicitly gave VITE_API_URL, use it. If on localhost, default to port 8000.
+// If deployed on Vercel without a configured backend URL, default to standalone client engine.
+const API_BASE_URL = configuredApiUrl || (isLocalhost ? 'http://localhost:8000/api/v1' : null);
 
 class ApiService {
+  private isBackendAvailable: boolean = true;
+
   private getToken(): string | null {
     return localStorage.getItem('dullnit_token');
   }
@@ -35,6 +43,11 @@ class ApiService {
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    // If no backend URL is configured (e.g. static Vercel deployment), bypass network immediately
+    if (!API_BASE_URL || !this.isBackendAvailable) {
+      throw new Error('BACKEND_OFFLINE_OR_STATIC');
+    }
+
     const token = this.getToken();
     const headers: Record<string, string> = {
       ...(options.headers as Record<string, string> || {}),
@@ -54,14 +67,21 @@ class ApiService {
         headers,
       });
 
+      // If backend returns HTML (e.g. Vercel SPA index.html fallback), treat as offline
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        this.isBackendAvailable = false;
+        throw new Error('BACKEND_OFFLINE_OR_STATIC');
+      }
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Network request failed' }));
+        const errorData = await response.json().catch(() => ({ detail: 'Request failed' }));
         throw new Error(errorData.detail || `Request failed with status ${response.status}`);
       }
 
       return await response.json();
     } catch (networkError: unknown) {
-      // If deployed statically on Vercel or backend is offline, throw so caller can fall back cleanly
+      this.isBackendAvailable = false;
       throw networkError;
     }
   }
