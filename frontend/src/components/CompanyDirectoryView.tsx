@@ -74,7 +74,7 @@ export const CompanyDirectoryView: React.FC = () => {
           website: 'https://synthetixlabs.ai',
           engineers_count: '140+',
           founded_year: '2021',
-          image_url: '/company_synth.png',
+          image_url: '/company_synth_wide.jpg',
           bg_color: '#DFEBFD',
           tech_stack: ['PyTorch', 'Python', 'Next.js', 'Redis', 'Kubernetes'],
           description:
@@ -140,7 +140,7 @@ export const CompanyDirectoryView: React.FC = () => {
           website: 'https://apexglobal.tech',
           engineers_count: '250+',
           founded_year: '2018',
-          image_url: '/company_apex.png',
+          image_url: '/company_apex_wide.jpg',
           bg_color: '#E2FAE2',
           tech_stack: ['FastAPI', 'Python', 'React', 'Docker', 'PostgreSQL', 'PyTorch'],
           description:
@@ -204,7 +204,7 @@ export const CompanyDirectoryView: React.FC = () => {
           website: 'https://meridiandata.org',
           engineers_count: '85+',
           founded_year: '2020',
-          image_url: '/company_meridian.png',
+          image_url: '/company_meridian_wide.jpg',
           bg_color: '#FEEAE1',
           tech_stack: ['Python', 'Docker', 'GCP', 'PostgreSQL', 'FastAPI'],
           description:
@@ -371,20 +371,20 @@ export const CompanyDirectoryView: React.FC = () => {
             {[1, 2, 3].map((idx) => (
               <div
                 key={idx}
-                className="bg-[#F8FAFC] rounded-[28px] p-6 border border-[#E2E8F0] animate-pulse space-y-4"
+                className="bg-[#F8FAFC] rounded-[32px] p-6 border border-[#E2E8F0] animate-pulse space-y-4"
               >
                 <div className="h-4 bg-[#E2E8F0] rounded-full w-1/3" />
                 <div className="h-7 bg-[#E2E8F0] rounded-xl w-3/4" />
                 <div className="h-16 bg-[#E2E8F0] rounded-2xl w-full" />
-                <div className="h-12 bg-[#E2E8F0] rounded-2xl w-full" />
+                <div className="h-40 bg-[#E2E8F0] rounded-2xl w-full" />
               </div>
             ))}
           </div>
         )}
 
-        {/* ── 3 PASTEL COMPANY CARDS (EXACT REFERENCE REPRODUCTION) ── */}
+        {/* ── 3 PASTEL COMPANY CARDS (LARGE-IMAGE-BOTTOM DESIGN 1:1) ── */}
         {!loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mb-10">
             {filteredCompanies.map((company) => {
               const hasSubmitted = submittedOrgs[company.id];
               const isSubmitting = submittingOrgId === company.id;
@@ -393,12 +393,13 @@ export const CompanyDirectoryView: React.FC = () => {
                 <div
                   key={company.id}
                   style={{ backgroundColor: company.bg_color }}
-                  className="rounded-[28px] p-6 sm:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-md border border-black/5"
+                  className="rounded-[32px] overflow-hidden shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-lg border border-black/5"
                 >
-                  <div>
-                    {/* Top Row: Tag + Three dots */}
+                  {/* TOP SECTION: COMPANY INFORMATION */}
+                  <div className="p-7 sm:p-8 flex flex-col flex-1">
+                    {/* Small Label Tag & Three-dot Menu */}
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-[0.16em]">
+                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-[0.16em]">
                         ABOUT THE COMPANY
                       </span>
                       <button
@@ -410,31 +411,20 @@ export const CompanyDirectoryView: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* Company Name & Building Image Row */}
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex-1">
-                        <h2 className="text-xl font-extrabold text-[#0F172A] tracking-tight leading-snug mb-2">
-                          {company.name}
-                        </h2>
-                        <p className="text-xs text-[#475569] leading-relaxed line-clamp-4">
-                          {company.description}
-                        </p>
-                      </div>
+                    {/* Company Name */}
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight leading-snug mb-2">
+                      {company.name}
+                    </h2>
 
-                      {/* Right-side Building Thumbnail */}
-                      <div className="w-24 h-28 sm:w-28 sm:h-32 shrink-0 rounded-2xl overflow-hidden shadow-xs bg-white/50">
-                        <img
-                          src={company.image_url}
-                          alt={company.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
+                    {/* Short Description */}
+                    <p className="text-xs sm:text-sm text-[#475569] leading-relaxed mb-6 font-normal">
+                      {company.description}
+                    </p>
 
                     {/* Statistics Row: Engineers Count & Open Roles Count */}
-                    <div className="flex items-center gap-8 py-3 my-2">
+                    <div className="flex items-center gap-12 sm:gap-14 mt-auto pt-2">
                       <div>
-                        <div className="text-2xl font-black text-[#0F172A] tracking-tight">
+                        <div className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
                           {company.engineers_count}
                         </div>
                         <div className="text-xs text-[#64748B] font-medium mt-0.5">
@@ -443,7 +433,7 @@ export const CompanyDirectoryView: React.FC = () => {
                       </div>
 
                       <div>
-                        <div className="text-2xl font-black text-[#0F172A] tracking-tight">
+                        <div className="text-2xl sm:text-3xl font-black text-[#0F172A] tracking-tight">
                           {company.roles.length}
                         </div>
                         <div className="text-xs text-[#64748B] font-medium mt-0.5">
@@ -453,40 +443,60 @@ export const CompanyDirectoryView: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Bottom Actions: View Roles & Submit Dossier */}
-                  <div className="pt-2">
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* Left: View Roles */}
-                      <button
-                        type="button"
-                        onClick={() => setSelectedJob({ company, job: company.roles[0] })}
-                        className="rounded-xl bg-white hover:bg-slate-50 active:scale-98 text-[#0F172A] text-xs font-bold py-3 px-3 transition cursor-pointer text-center shadow-xs border border-black/5"
-                      >
-                        View Roles ({company.roles.length})
-                      </button>
+                  {/* BOTTOM SECTION: LARGE BUILDING IMAGE WITH FLOATING BUTTONS & FOOTER */}
+                  <div className="relative w-full h-[230px] sm:h-[250px] overflow-hidden rounded-t-[28px] rounded-b-[32px] mt-2">
+                    {/* Full Building Background Photo */}
+                    <img
+                      src={company.image_url}
+                      alt={company.name}
+                      className="w-full h-full object-cover"
+                    />
 
-                      {/* Right: Submit Dossier */}
-                      <button
-                        type="button"
-                        disabled={isSubmitting || hasSubmitted}
-                        onClick={() => handleSubmitDossier(company)}
-                        className={`rounded-xl text-xs font-bold py-3 px-3 transition shadow-xs cursor-pointer text-center flex items-center justify-center gap-1.5 ${
-                          hasSubmitted
-                            ? 'bg-emerald-600 text-white cursor-default'
-                            : 'bg-[#1E70F9] hover:bg-[#155FD0] active:scale-98 text-white'
-                        }`}
-                      >
-                        {hasSubmitted ? (
-                          <>
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Submitted</span>
-                          </>
-                        ) : isSubmitting ? (
-                          <span>Sending...</span>
-                        ) : (
-                          <span>Submit Dossier</span>
-                        )}
-                      </button>
+                    {/* Dark gradient overlay for text & button legibility */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+
+                    {/* Floating Buttons & Footer Content */}
+                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col gap-3.5 z-10">
+                      {/* Buttons Row */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* View Roles (White Button, Dark Text) */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedJob({ company, job: company.roles[0] })}
+                          className="rounded-xl bg-white hover:bg-slate-100 active:scale-98 text-[#0F172A] text-xs sm:text-sm font-bold py-3 px-3 transition cursor-pointer text-center shadow-md border-0"
+                        >
+                          View Roles ({company.roles.length})
+                        </button>
+
+                        {/* Submit Dossier (Blue Filled Button) */}
+                        <button
+                          type="button"
+                          disabled={isSubmitting || hasSubmitted}
+                          onClick={() => handleSubmitDossier(company)}
+                          className={`rounded-xl text-xs sm:text-sm font-bold py-3 px-3 transition shadow-md cursor-pointer text-center flex items-center justify-center gap-1.5 ${
+                            hasSubmitted
+                              ? 'bg-emerald-600 text-white cursor-default'
+                              : 'bg-[#1E70F9] hover:bg-[#155FD0] active:scale-98 text-white'
+                          }`}
+                        >
+                          {hasSubmitted ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Submitted</span>
+                            </>
+                          ) : isSubmitting ? (
+                            <span>Sending...</span>
+                          ) : (
+                            <span>Submit Dossier</span>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Footer inside image: Founded year on left, Location on right */}
+                      <div className="flex items-center justify-between text-[11px] sm:text-xs text-white/95 font-medium px-1 drop-shadow-sm">
+                        <span>Founded {company.founded_year}</span>
+                        <span>{company.location}</span>
+                      </div>
                     </div>
                   </div>
 
