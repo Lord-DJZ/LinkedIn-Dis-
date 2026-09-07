@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Eye, EyeOff, Loader2, CheckCircle2, X, AlertCircle, Sparkles, Briefcase } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle2, X, AlertCircle } from 'lucide-react';
 import { api } from '../services/api';
 import type { User, AccountRole } from '../types';
 
@@ -115,29 +115,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
     } catch (caughtError: unknown) {
       setErrorMessage(
         caughtError instanceof Error ? caughtError.message : 'Google authentication unavailable.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickDemo = async (demoRole: AccountRole) => {
-    setIsLoading(true);
-    setErrorMessage(null);
-    try {
-      if (demoRole === 'candidate') {
-        await api.ensureCandidateAuth();
-      } else {
-        await api.ensureRecruiterAuth();
-      }
-      const me = await api.getMe();
-      setIsSuccess(true);
-      setTimeout(() => {
-        onLoginSuccess(me, demoRole);
-      }, 500);
-    } catch (caughtError: unknown) {
-      setErrorMessage(
-        caughtError instanceof Error ? caughtError.message : 'The demo account is not available right now.'
       );
     } finally {
       setIsLoading(false);
@@ -598,33 +575,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
                         </>
                       )}
                     </p>
-                  </div>
-
-                  {/* Discrete Demo Playground with Fake Sample Data */}
-                  <div className="w-full mt-7 pt-5 border-t border-[#f1f2f4] flex flex-col items-center">
-                    <span className="text-[11px] font-semibold text-[#9ca3af] uppercase tracking-wider mb-2.5">
-                      Or Preview Demo (Fake Data)
-                    </span>
-                    <div className="grid grid-cols-2 gap-2.5 w-full">
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo('candidate')}
-                        disabled={isLoading}
-                        className="py-2.5 px-3 rounded-xl border border-[#e5e7eb] bg-[#fafafa] hover:bg-white hover:border-[#111827] text-xs font-semibold text-[#374151] hover:text-[#111827] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Candidate Demo</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickDemo('recruiter')}
-                        disabled={isLoading}
-                        className="py-2.5 px-3 rounded-xl border border-[#e5e7eb] bg-[#fafafa] hover:bg-white hover:border-[#111827] text-xs font-semibold text-[#374151] hover:text-[#111827] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                      >
-                        <Briefcase className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Recruiter Demo</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
