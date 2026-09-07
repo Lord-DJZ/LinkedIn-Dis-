@@ -253,9 +253,9 @@ export function App() {
 
             <div className="space-y-2 text-xs mb-6">
               <div className="flex justify-between items-center p-3 bg-[#FAF7F2] rounded-xl border border-[#E8E2D9]">
-                <span className="text-[#736B63] font-medium">Backend Server</span>
+                <span className="text-[#736B63] font-medium">Backend & Storage</span>
                 <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> FastAPI (Port 8000)
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Hybrid Edge & Local Persistence
                 </span>
               </div>
               <div className="flex justify-between items-center p-3 bg-[#FAF7F2] rounded-xl border border-[#E8E2D9]">
